@@ -16,13 +16,14 @@
 	"forwardPorts": [7071],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "npm install; npm i -g fuzz-run",
+	"postCreateCommand": "npm i -g fuzz-run",
 
 	// Configure tool-specific properties.
 	"customizations": {
     "vscode": {
       "extensions": [
         "ms-azuretools.azure-dev",
+				"ms-azuretools.vscode-azurefunctions",
         "ms-azuretools.vscode-bicep",
         "esbenp.prettier-vscode",
         "humao.rest-client",
