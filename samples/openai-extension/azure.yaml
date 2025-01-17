@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: openai-extension-javascript
+metadata:
+  template: serverless-recipes-javascript
+
+services:
+  api:
+    project: .
+    language: ts
+    host: function
+
+hooks:
+  postprovision:
+    windows:
+      shell: pwsh
+      run: |
+        azd env get-values > .env
+        npm run update:local-settings
+    posix:
+      shell: sh
+      run: |
+        azd env get-values > .env
+        npm run update:local-settings

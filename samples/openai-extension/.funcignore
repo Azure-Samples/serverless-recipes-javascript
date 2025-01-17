@@ -1,0 +1,15 @@
+*.js.map
+*.ts
+.git*
+*.env*
+tsconfig.json
+azure.yaml
+local.settings.json
+node_modules/@types/
+node_modules/azure-functions-core-tools/
+node_modules/typescript/
+.vscode
+test
+docs
+infra
+README.md

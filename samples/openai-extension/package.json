@@ -1,0 +1,30 @@
+{
+  "name": "openai-extension",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/src/functions/*.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf dist",
+    "prestart": "npm run clean",
+    "start:host": "func start",
+    "start": "concurrently npm:start:host npm:watch --raw --kill-others",
+    "update:local-settings": "node ./scripts/update-local-settings.mjs",
+    "postinstall": "npm run update:local-settings"
+  },
+  "author": "Microsoft",
+  "license": "MIT",
+  "dependencies": {
+    "@azure/functions": "^4",
+    "dotenv": "^16.4.7",
+    "openai": "^4.78.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "azure-functions-core-tools": "^4",
+    "concurrently": "^9",
+    "rimraf": "^6",
+    "typescript": "^5"
+  }
+}
