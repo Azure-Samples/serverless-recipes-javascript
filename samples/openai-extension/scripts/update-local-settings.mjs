@@ -16,7 +16,7 @@ const __dirname = dirname(__filename);
 let settings = {
   FUNCTIONS_WORKER_RUNTIME: "node",
   AzureWebJobsFeatureFlags: "EnableWorkerIndexing",
-  AzureWebJobsStorage: ""
+  AzureWebJobsStorage: "UseDevelopmentStorage=true"
 };
 const settingsFilePath = join(__dirname, '../local.settings.json');
 const servicesFilePath = join(__dirname, '../infra/services.json');
