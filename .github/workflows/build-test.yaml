@@ -27,14 +27,14 @@ jobs:
       matrix:
         sample: ${{ fromJSON(needs.find_samples.outputs.samples) }}
 
-    name: ${{ matrix.sample }} - Node.js v${{ vars.NODE_VERSION }}
+    name: ${{ matrix.sample }} - Node.js v${NODE_VERSION}
     runs-on: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node.js v${{ vars.NODE_VERSION }}
+      - name: Setup Node.jsv${NODE_VERSION}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ vars.NODE_VERSION }}
+          node-version: ${NODE_VERSION}
       - name: Install dependencies
         run: cd samples/${{ matrix.sample }} && npm install
       - name: Build
