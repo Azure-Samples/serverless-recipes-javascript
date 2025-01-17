@@ -1,7 +1,7 @@
 <!-- prettier-ignore -->
 <div align="center">
 
-<img src="./docs/icon.png" alt="" align="center" height="64" />
+<img src="./docs/images/icon.png" alt="" align="center" height="96" />
 
 # Serverless Recipes for JavaScript/TypeScript
 
@@ -45,18 +45,14 @@ Then you can get the project code:
 
 1. [**Fork**](https://github.com/Azure-Samples/serverless-recipes-javascript/fork) the project to create your own copy of this repository.
 2. On your forked repository, select the **Code** button, then the **Local** tab, and copy the URL of your forked repository.
-
-<div align="center">
-  <img src="./docs/images/clone-url.png" alt="Screenshot showing how to copy the repository URL" width="400px" />
-</div>
-
+   ![Screenshot showing how to copy the repository URL](./docs/images/clone-url.png)
 3. Open a terminal and run this command to clone the repo: `git clone <your-repo-url>`
 
 ### Use GitHub Codespaces
 
 You can run this project directly in your browser by using GitHub Codespaces, which will open a web-based VS Code:
 
-[![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=GitHub+Codespaces&message=Open&color=blue&logo=github)](https://codespaces.new/Azure-Samples/serverless-recipes-javascript?hide_repo_select=true&ref&quickstart=true)
+[![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=flat-square&label=GitHub+Codespaces&message=Open&color=blue&logo=github)](https://codespaces.new/Azure-Samples/serverless-recipes-javascript?hide_repo_select=true&ref&quickstart=true)
 
 ### Use a VSCode dev container
 
@@ -64,7 +60,7 @@ A similar option to Codespaces is VS Code Dev Containers, that will open the pro
 
 You will also need to have [Docker](https://www.docker.com/get-started/) installed on your machine to run the container.
 
-[![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/Azure-Samples/serverless-recipes-javascript)
+[![Open in Dev Containers](https://img.shields.io/static/v1?style=flat-square&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/Azure-Samples/serverless-recipes-javascript)
 
 ## Run the samples
 
@@ -82,7 +78,7 @@ azd auth login
 azd up
 ```
 
-After the initial deployment is completed, you can also run the sample locally with `npm start`.
+Once the initial deployment is completed, you can also run the sample locally with `npm start`.
 You can check the `README.md` file in each sample directory for more specific instructions.
 
 <!-- #begin-samples -->
