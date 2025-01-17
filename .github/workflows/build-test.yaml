@@ -21,7 +21,7 @@ jobs:
           echo "samples=$samples" >> $GITHUB_OUTPUT
 
   build_test:
-    needs: find-samples
+    needs: find_samples
     strategy:
       matrix:
         sample: ${{ fromJSON(needs.find-samples.outputs.samples) }}
