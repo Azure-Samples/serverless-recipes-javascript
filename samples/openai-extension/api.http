@@ -5,5 +5,13 @@
 
 @api_host = http://localhost:7071
 
-### Get a text completion using OpenAI bindings
+### Ask for who is <anyone>
 GET {{api_host}}/api/whois/Albert%20Einstein
+
+### Get a generic text completion
+POST {{api_host}}/api/completions
+Content-Type: application/json
+
+{
+    "prompt": "Who is Luke's father in Star Wars?"
+}
