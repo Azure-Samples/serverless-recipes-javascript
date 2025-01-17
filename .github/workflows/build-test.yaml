@@ -9,11 +9,12 @@ env:
   NODE_VERSION: 20
 
 jobs:
-  find-samples:
+  find_samples:
     runs-on: ubuntu-latest
     outputs:
       samples: ${{ steps.list-samples.outputs.samples }}
     steps:
+      - uses: actions/checkout@v4
       - id: list-samples
         run: |
           samples=$(ls samples | jq -R -s -c 'split("\n")[:-1]')
