@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
 
-name: openai-extension-javascript
+name: openai-extension-textcompletion-javascript
 metadata:
   template: serverless-recipes-javascript
 
