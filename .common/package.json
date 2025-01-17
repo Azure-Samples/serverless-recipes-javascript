@@ -1,0 +1,9 @@
+{
+  "name": "common",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "create-sample": "node scripts/create-sample.js",
+    "update-sample": "node scripts/update-sample.js"
+  }
+}
