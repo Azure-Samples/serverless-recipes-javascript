@@ -5,9 +5,6 @@ on:
   pull_request:
     branches: [main]
 
-env:
-  NODE_VERSION: 20
-
 jobs:
   find_samples:
     runs-on: ubuntu-latest
@@ -26,15 +23,16 @@ jobs:
     strategy:
       matrix:
         sample: ${{ fromJSON(needs.find_samples.outputs.samples) }}
+        node_version: [20]
 
-    name: ${{ matrix.sample }} - Node.js v${NODE_VERSION}
+    name: ${{ matrix.sample }} - Node.js v${{ matrix.node_version }}
     runs-on: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node.jsv${NODE_VERSION}
+      - name: Setup Node.js v${{ matrix.node_version }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${NODE_VERSION}
+          node-version: ${{ matrix.node_version }}
       - name: Install dependencies
         run: cd samples/${{ matrix.sample }} && npm install
       - name: Build
