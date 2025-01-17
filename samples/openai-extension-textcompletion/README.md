@@ -73,7 +73,7 @@ You can run this project directly in your browser by using GitHub Codespaces, wh
    ![Screenshot showing how to create a new codespace](../../docs/images/codespaces.png?raw=true)
 3. Wait for the Codespace to be created, it should take a few minutes.
 
-Follow [these instructions](../../README.md#use-your-local-environment) to run the project locally.
+If you prefer to run the project locally, follow [these instructions](../../README.md#use-your-local-environment).
 
 ### Deploy Azure resources
 
