@@ -16,7 +16,7 @@ jobs:
     steps:
       - id: list-samples
         run: |
-          samples=$(ls /samples | jq -R -s -c 'split("\n")[:-1]')
+          samples=$(ls samples | jq -R -s -c 'split("\n")[:-1]')
           echo "samples=$samples" >> $GITHUB_OUTPUT
 
   build_test:
