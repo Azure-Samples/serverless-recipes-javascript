@@ -17,14 +17,15 @@ jobs:
       - uses: actions/checkout@v4
       - id: list-samples
         run: |
-          export samples=$(ls samples | jq -R -s -c 'split("\n")[:-1]')
+          samples=$(ls samples | jq -R -s -c 'split("\n")[:-1]')
+          echo "Found samples: $samples"
           echo "samples=$samples" >> $GITHUB_OUTPUT
 
   build_test:
     needs: find_samples
     strategy:
       matrix:
-        sample: ${{ fromJSON(needs.find-samples.outputs.samples) }}
+        sample: ${{ fromJSON(needs.find_samples.outputs.samples) }}
 
     name: ${{ matrix.sample }} - Node.js v${{ vars.NODE_VERSION }}
     runs-on: [ubuntu-latest]
