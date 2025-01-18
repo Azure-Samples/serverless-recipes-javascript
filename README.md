@@ -45,6 +45,7 @@ Then you can get the project code:
 
 1. [**Fork**](https://github.com/Azure-Samples/serverless-recipes-javascript/fork) the project to create your own copy of this repository.
 2. On your forked repository, select the **Code** button, then the **Local** tab, and copy the URL of your forked repository.
+
    ![Screenshot showing how to copy the repository URL](./docs/images/clone-url.png)
 3. Open a terminal and run this command to clone the repo: `git clone <your-repo-url>`
 
