@@ -23,13 +23,46 @@ This repository is a collection of code examples demonstrating how to build serv
 > **What's Serverless?**<br>
 > Serverless computing allows you to build and run applications without managing infrastructure. You can focus on your code and let the cloud provider handle the rest. Azure provides a wide range of serverless services, including [Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-overview?pivots=programming-language-javascript), [Azure Static Web Apps]([Azure Static Web Apps](https://learn.microsoft.com/azure/static-web-apps/overview), [Azure Cosmos DB](https://learn.microsoft.com/azure/cosmos-db/nosql/), and more.
 
+## Why serverless?
+
+Let's say you're a developer for the Contoso Solutions company, and you've been tasked to build new applications with a fast turnaround time, startup style. You need to build these apps quickly with a low initial budget, and you don't want to worry about managing servers, scaling, or infrastructure. **You want to focus on writing code and delivering value to your users.**
+
+*This is exactly where serverless is a great fit!*
+
+While walking through this collection of ready-to-use code examples, you'll learn how to solve common problems and build applications using many of the serverless technologies available on Azure. The best part? You only need to pay attention to the code and the business logic, all samples are ready to deploy and run in your Azure account.
+
+## Prerequisites
+- **Azure account**. If you're new to Azure, [get an Azure account for free](https://azure.microsoft.com/free) to get free Azure credits to get started. If you're a student, you can also get free credits with [Azure for Students](https://aka.ms/azureforstudents).
+- **GitHub account**. If you don't have one, you can [create a free GitHub account](https://github.com/signup). You can optionally use [GitHub Copilot Free](https://github.com/features/copilot) to help you write code and ship your application even faster.
+
 ## Getting started
 
 There are multiple ways to get started with this project.
 
 The quickest way is to use [GitHub Codespaces](#use-github-codespaces) that provides a preconfigured environment for you. Alternatively, you can [set up your local environment](#use-your-local-environment) following the instructions below.
 
-### Use your local environment
+<details open>
+<summary><h3>Use GitHub Codespaces</h3></summary>
+
+You can run this project directly in your browser by using GitHub Codespaces, which will open a web-based VS Code:
+
+[![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=flat-square&label=GitHub+Codespaces&message=Open&color=blue&logo=github)](https://codespaces.new/Azure-Samples/serverless-recipes-javascript?hide_repo_select=true&ref&quickstart=true)
+
+</details>
+
+<details>
+<summary><h3>Use a VSCode dev container</h3></summary>
+
+A similar option to Codespaces is VS Code Dev Containers, that will open the project in your local VS Code instance using the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
+
+You will also need to have [Docker](https://www.docker.com/get-started/) installed on your machine to run the container.
+
+[![Open in Dev Containers](https://img.shields.io/static/v1?style=flat-square&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/Azure-Samples/serverless-recipes-javascript)
+
+</details>
+
+<details>
+<summary><h3>Use your local environment</h3></summary>
 
 You need to install following tools to work on your local machine:
 
@@ -49,19 +82,7 @@ Then you can get the project code:
    ![Screenshot showing how to copy the repository URL](./docs/images/clone-url.png)
 3. Open a terminal and run this command to clone the repo: `git clone <your-repo-url>`
 
-### Use GitHub Codespaces
-
-You can run this project directly in your browser by using GitHub Codespaces, which will open a web-based VS Code:
-
-[![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=flat-square&label=GitHub+Codespaces&message=Open&color=blue&logo=github)](https://codespaces.new/Azure-Samples/serverless-recipes-javascript?hide_repo_select=true&ref&quickstart=true)
-
-### Use a VSCode dev container
-
-A similar option to Codespaces is VS Code Dev Containers, that will open the project in your local VS Code instance using the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
-
-You will also need to have [Docker](https://www.docker.com/get-started/) installed on your machine to run the container.
-
-[![Open in Dev Containers](https://img.shields.io/static/v1?style=flat-square&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/Azure-Samples/serverless-recipes-javascript)
+</details>
 
 ## Run the samples
 
@@ -81,6 +102,10 @@ azd up
 
 Once the initial deployment is completed, you can also run the sample locally with `npm start`.
 You can check the `README.md` file in each sample directory for more specific instructions.
+
+| Sample | Technologies | Deployment | Video | Blog |
+| --- | --- | --- | --- | --- |
+| [Azure Functions OpenAI extension - text completion](./samples/openai-extension-textcompletion) | Azure OpenAI, Functions extensions | <5 min | [📺](https://www.youtube.com) | [📚](https://techcommunity.microsoft.com/) |
 
 <!-- #begin-samples -->
 <!-- TODO generate table script -->
