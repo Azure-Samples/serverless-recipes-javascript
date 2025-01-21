@@ -42,7 +42,7 @@ function getSampleInfo(sampleDir) {
 }
 
 function generateTable(samples) {
-  const header = '| Sample | Deployment Time | Video | Blog |\n| --- | --- | --- | --- |\n';
+  const header = '| Sample | Deployment Time | Video | Blog |\n|:--- | --- | --- | --- |\n';
   const rows = samples.map(sample => 
     `| [${sample.name}](./samples/${sample.dir}) | ${sample.deployment} | ${sample.video} | ${sample.blog} |`
   ).join('\n');
