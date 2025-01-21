@@ -103,13 +103,11 @@ azd up
 Once the initial deployment is completed, you can also run the sample locally with `npm start`.
 You can check the `README.md` file in each sample directory for more specific instructions.
 
-| Sample | Technologies | Deployment | Video | Blog |
-| --- | --- | --- | --- | --- |
-| [Azure Functions OpenAI extension - text completion](./samples/openai-extension-textcompletion) | Azure OpenAI, Functions extensions | <5 min | [📺](https://www.youtube.com) | [📚](https://techcommunity.microsoft.com/) |
-
 <!-- #begin-samples -->
-<!-- TODO generate table script -->
 
+| Sample | Deployment Time | Video | Blog |
+| --- | --- | --- | --- |
+| [Azure Functions OpenAI extension - text completion](./samples/openai-extension-textcompletion) | <5min | [📺](TODO) | [📚](TODO) |
 
 <!-- #end-samples -->
 
