@@ -37,10 +37,8 @@ description: This sample demonstrates how to build use Azure OpenAI text complet
 
 This sample demonstrates how to use Azure OpenAI text completions with [Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-overview?pivots=programming-language-javascript) the [Azure OpenAI extension](https://learn.microsoft.com/azure/azure-functions/functions-bindings-openai?tabs=isolated-process&pivots=programming-language-typescript).
 
-<!--
 - [📺 YouTube](TODO) - This sample explained in video
 - [📚 Azure Blog](TODO) - Related blog post
--->
 
 ## Overview
 
@@ -63,6 +61,18 @@ This application is made from multiple components:
 - Azure account permissions:
   - Your Azure account must have `Microsoft.Authorization/roleAssignments/write` permissions, such as [Role Based Access Control Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#role-based-access-control-administrator-preview), [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#user-access-administrator), or [Owner](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#owner). If you don't have subscription-level permissions, you must be granted [RBAC](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#role-based-access-control-administrator-preview) for an existing resource group and [deploy to that existing group](docs/deploy_existing.md#resource-group).
   - Your Azure account also needs `Microsoft.Resources/deployments/write` permissions on the subscription level.
+
+### Cost estimation
+
+Pricing varies per region and usage, so it isn't possible to predict exact costs for your usage.
+However, you can use the [Azure pricing calculator](https://azure.com/e/d8dffb8ec0544c4299a4bf0a123be4f5) for the resources below to get an estimate.
+
+- Azure Functions: Flex Consumption plan, Free for the first 250K executions. Pricing per execution and memory used. [Pricing](https://azure.microsoft.com/pricing/details/functions/)
+- Azure OpenAI: Standard tier, GPT and Ada models. Pricing per 1K tokens used, and at least 1K tokens are used per question. [Pricing](https://azure.microsoft.com/pricing/details/cognitive-services/openai-service/)
+- Azure Blob Storage: Standard tier with LRS. Pricing per GB stored and data transfer. [Pricing](https://azure.microsoft.com/pricing/details/storage/blobs/)
+
+⚠️ To avoid unnecessary costs, remember to take down your app if it's no longer in use,
+either by deleting the resource group in the Portal or running `azd down --purge`.
 
 ### Setup development environment
 
