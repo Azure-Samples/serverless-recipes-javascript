@@ -38,7 +38,7 @@
     "embeddingsModelCapacity": {
       "value": "${AZURE_OPENAI_EMBEDDINGS_MODEL_CAPACITY=20}"
     },
-    "isContinuousDeployment": {
+    "isContinuousIntegration": {
       "value": "${CI=false}"
     }
   }

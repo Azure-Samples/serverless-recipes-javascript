@@ -28,7 +28,7 @@ description: This sample demonstrates how to build use Azure OpenAI text complet
 
 [![Open project in GitHub Codespaces](https://img.shields.io/badge/Codespaces-Open-blue?style=flat-square&logo=github)](https://codespaces.new/Azure-Samples/serverless-recipes-javascript?hide_repo_select=true&ref=main&quickstart=true)
 ![Node version](https://img.shields.io/badge/Node.js->=20-3c873a?style=flat-square)
-![Deployment time](https://img.shields.io/badge/Time%20to%20deploy-<5min-teal?style=flat-square)
+![Deployment time](https://img.shields.io/badge/Time%20to%20deploy-5min-teal?style=flat-square)
 <!-- [![](https://img.shields.io/badge/YouTube-Watch-d95652.svg?style=flat-square&logo=youtube)](TODO) -->
 
 [Overview](#overview) • [Run the sample](#run-the-sample) • [Key concepts](#key-concepts) • [Troubleshooting](#troubleshooting) • [Next steps](#next-steps)

@@ -60,7 +60,7 @@ param embeddingsModelCapacity int // Set in main.parameters.json
 param principalId string = ''
 
 // Differentiates between automated and manual deployments
-param isContinuousDeployment bool // Set in main.parameters.json
+param isContinuousIntegration bool // Set in main.parameters.json
 
 // ---------------------------------------------------------------------------
 // Services configuration
@@ -80,12 +80,12 @@ var abbrs = loadJsonContent('abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = { 'azd-env-name': environmentName }
 
+var principalType = isContinuousIntegration ? 'ServicePrincipal' : 'User'
 var apiResourceName = '${abbrs.webSitesFunctions}api-${resourceToken}'
 var storageAccountName = '${abbrs.storageStorageAccounts}${resourceToken}'
 var openAiUrl = useOpenAi ? 'https://${openAi.outputs.name}.openai.azure.com' : ''
 // var storageUrl = 'https://${storage.outputs.name}.blob.${environment().suffixes.storage}'
 
-// Organize resources in a resource group
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: !empty(resourceGroupName) ? resourceGroupName : '${abbrs.resourcesResourceGroups}${environmentName}'
   location: location
@@ -101,11 +101,10 @@ module function 'br/public:avm/res/web/site:0.13.0' = {
     kind: 'functionapp,linux'
     name: apiResourceName
     serverFarmResourceId: appServicePlan.outputs.resourceId
-    // appInsightResourceId: '<appInsightResourceId>'
+    appInsightResourceId: monitoring.outputs.applicationInsightsResourceId
     managedIdentities: { systemAssigned: true }
     appSettingsKeyValuePairs: union(
       {
-        // APPINSIGHTS_INSTRUMENTATIONKEY: monitoring.outputs.applicationInsightsInstrumentationKey
       },
       useOpenAi
         ? {
@@ -117,7 +116,10 @@ module function 'br/public:avm/res/web/site:0.13.0' = {
           }
         : {}
     )
-    siteConfig: {}
+    siteConfig: {
+      minTlsVersion: '1.2'
+      ftpsState: 'FtpsOnly'
+    }
     functionAppConfig: {
       deployment: {
         storage: {
@@ -138,6 +140,7 @@ module function 'br/public:avm/res/web/site:0.13.0' = {
       }
     }
     storageAccountResourceId: storage.outputs.resourceId
+    storageAccountUseIdentityAuthentication: true
   }
 }
 
@@ -160,8 +163,13 @@ module storage 'br/public:avm/res/storage/storage-account:0.15.0' = {
     name: storageAccountName
     tags: tags
     location: location
-    kind: 'BlobStorage'
-    allowSharedKeyAccess: !useVnet
+    skuName: 'Standard_LRS'
+    allowSharedKeyAccess: false
+    publicNetworkAccess: 'Enabled'
+    networkAcls: {
+      bypass: 'AzureServices'
+      defaultAction: 'Allow'
+    }
     blobServices: {
       containers: [
         {
@@ -172,20 +180,19 @@ module storage 'br/public:avm/res/storage/storage-account:0.15.0' = {
   }
 }
 
-// // Monitor application with Azure Monitor
-// module monitoring './core/monitor/monitoring.bicep' = {
-//   name: 'monitoring'
-//   scope: resourceGroup
-//   params: {
-//     location: location
-//     tags: tags
-//     logAnalyticsName: '${abbrs.operationalInsightsWorkspaces}${resourceToken}'
-//     applicationInsightsName: '${abbrs.insightsComponents}${resourceToken}'
-//     applicationInsightsDashboardName: '${abbrs.portalDashboards}${resourceToken}'
-//   }
-// }
+module monitoring 'br/public:avm/ptn/azd/monitoring:0.1.1' = {
+  name: 'monitoring'
+  scope: resourceGroup
+  params: {
+    tags: tags
+    location: location
+    applicationInsightsName: '${abbrs.insightsComponents}${resourceToken}'
+    applicationInsightsDashboardName: '${abbrs.portalDashboards}${resourceToken}'
+    logAnalyticsName: '${abbrs.operationalInsightsWorkspaces}${resourceToken}'
+  }
+}
 
-module openAi 'br/public:avm/res/cognitive-services/account:0.9.1' = {
+module openAi 'br/public:avm/res/cognitive-services/account:0.9.1' = if (useOpenAi) {
   name: 'openai'
   scope: resourceGroup
   params: {
@@ -224,43 +231,6 @@ module openAi 'br/public:avm/res/cognitive-services/account:0.9.1' = {
     ]
   }
 }
-
-// module openAi 'core/ai/cognitiveservices.bicep' = if (useOpenAi) {
-//   name: 'openai'
-//   scope: resourceGroup
-//   params: {
-//     name: '${abbrs.cognitiveServicesAccounts}${resourceToken}'
-//     location: openAiLocation
-//     tags: tags
-//     sku: {
-//       name: openAiSkuName
-//     }
-//     disableLocalAuth: true
-//     deployments: [
-//       {
-//         name: chatDeploymentName
-//         model: {
-//           format: 'OpenAI'
-//           name: chatModelName
-//           version: chatModelVersion
-//         }
-//         sku: {
-//           name: 'GlobalStandard'
-//           capacity: chatDeploymentCapacity
-//         }
-//       }
-// {
-//   name: embeddingsDeploymentName
-//   model: {
-//     format: 'OpenAI'
-//     name: embeddingsModelName
-//     version: embeddingsModelVersion
-//   }
-//   capacity: embeddingsDeploymentCapacity
-// }
-//     ]
-//   }
-// }
 
 // module cosmosDb 'br/public:avm/res/document-db/database-account:0.9.0' = {
 //   name: 'cosmosDb'
@@ -326,14 +296,15 @@ module openAi 'br/public:avm/res/cognitive-services/account:0.9.1' = {
 // ---------------------------------------------------------------------------
 
 // User roles
-module openAiRoleUser 'core/security/role.bicep' = if (!isContinuousDeployment) {
+module openAiRoleUser 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = {
   scope: resourceGroup
   name: 'openai-role-user'
   params: {
     principalId: principalId
-    // Cognitive Services OpenAI User
+    roleName: 'Cognitive Services OpenAI User'
     roleDefinitionId: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
-    principalType: 'User'
+    principalType: principalType
+    resourceId: openAi.outputs.resourceId
   }
 }
 
@@ -349,14 +320,25 @@ module openAiRoleUser 'core/security/role.bicep' = if (!isContinuousDeployment) 
 // }
 
 // System roles
-module openAiRoleApi 'core/security/role.bicep' = {
+module openAiRoleApi 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = {
   scope: resourceGroup
   name: 'openai-role-api'
   params: {
     principalId: function.outputs.systemAssignedMIPrincipalId
-    // Cognitive Services OpenAI User
+    roleName: 'Cognitive Services OpenAI User'
     roleDefinitionId: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
-    principalType: 'ServicePrincipal'
+    resourceId: openAi.outputs.resourceId
+  }
+}
+
+module storageRoleApi 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = {
+  scope: resourceGroup
+  name: 'storage-role-api'
+  params: {
+    principalId: function.outputs.systemAssignedMIPrincipalId
+    roleName: 'Storage Blob Data Contributor'
+    roleDefinitionId: 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
+    resourceId: storage.outputs.resourceId
   }
 }
 
