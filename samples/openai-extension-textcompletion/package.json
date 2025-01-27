@@ -16,6 +16,7 @@
   },
   "author": "Microsoft",
   "license": "MIT",
+  "template": "functions",
   "dependencies": {
     "@azure/functions": "^4",
     "dotenv": "^16.4.7",

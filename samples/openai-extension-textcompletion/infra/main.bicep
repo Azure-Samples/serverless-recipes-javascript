@@ -75,6 +75,7 @@ var useOpenAi = services.?useOpenAi ?? false
 var useBlobStorage = services.?useBlobStorage ?? false
 
 // ---------------------------------------------------------------------------
+// Common variables
 
 var abbrs = loadJsonContent('abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
@@ -85,6 +86,9 @@ var apiResourceName = '${abbrs.webSitesFunctions}api-${resourceToken}'
 var storageAccountName = '${abbrs.storageStorageAccounts}${resourceToken}'
 var openAiUrl = useOpenAi ? 'https://${openAi.outputs.name}.openai.azure.com' : ''
 // var storageUrl = 'https://${storage.outputs.name}.blob.${environment().suffixes.storage}'
+
+// ---------------------------------------------------------------------------
+// Resources
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: !empty(resourceGroupName) ? resourceGroupName : '${abbrs.resourcesResourceGroups}${environmentName}'
@@ -232,70 +236,9 @@ module openAi 'br/public:avm/res/cognitive-services/account:0.9.1' = if (useOpen
   }
 }
 
-// module cosmosDb 'br/public:avm/res/document-db/database-account:0.9.0' = {
-//   name: 'cosmosDb'
-//   scope: resourceGroup
-//   params: {
-//     name: !empty(cosmosDbServiceName) ? cosmosDbServiceName : '${abbrs.documentDBDatabaseAccounts}${resourceToken}'
-//     tags: tags
-//     locations: [
-//       {
-//         locationName: location
-//         failoverPriority: 0
-//         isZoneRedundant: false
-//       }
-//     ]
-//     managedIdentities: {
-//       systemAssigned: true
-//     }
-//     capabilitiesToAdd: [
-//       'EnableServerless'
-//       'EnableNoSQLVectorSearch'
-//     ]
-//     networkRestrictions: {
-//       ipRules: []
-//       virtualNetworkRules: []
-//       publicNetworkAccess: 'Enabled'
-//     }
-//     sqlDatabases: [
-//       {
-//         containers: [
-//           {
-//             name: 'vectorSearchContainer'
-//             paths: [
-//               '/id'
-//             ]
-//           }
-//         ]
-//         name: 'vectorSearchDB'
-//       }
-//       {
-//         containers: [
-//           {
-//             name: 'chatHistoryContainer'
-//             paths: [
-//               '/userId'
-//             ]
-//           }
-//         ]
-//         name: 'chatHistoryDB'
-//       }
-//     ]
-//   }
-// }
-
-// module dbRoleDefinition './core/database/cosmos/sql/cosmos-sql-role-def.bicep' = {
-//   scope: resourceGroup
-//   name: 'db-contrib-role-definition'
-//   params: {
-//     accountName: cosmosDb.outputs.name
-//   }
-// }
-
-// Managed identity roles assignation
 // ---------------------------------------------------------------------------
+// User roles assignation
 
-// User roles
 module openAiRoleUser 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = {
   scope: resourceGroup
   name: 'openai-role-user'
@@ -308,18 +251,9 @@ module openAiRoleUser 'br/public:avm/ptn/authorization/resource-role-assignment:
   }
 }
 
-// module dbContribRoleUser './core/database/cosmos/sql/cosmos-sql-role-assign.bicep' = if (!isContinuousDeployment) {
-//   scope: resourceGroup
-//   name: 'db-contrib-role-user'
-//   params: {
-//     accountName: cosmosDb.outputs.name
-//     principalId: principalId
-//     // Cosmos DB Data Contributor
-//     roleDefinitionId: dbRoleDefinition.outputs.id
-//   }
-// }
+// ---------------------------------------------------------------------------
+// System roles assignation
 
-// System roles
 module openAiRoleApi 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = {
   scope: resourceGroup
   name: 'openai-role-api'
@@ -342,16 +276,8 @@ module storageRoleApi 'br/public:avm/ptn/authorization/resource-role-assignment:
   }
 }
 
-// module dbContribRoleApi './core/database/cosmos/sql/cosmos-sql-role-assign.bicep' = {
-//   scope: resourceGroup
-//   name: 'db-contrib-role-api'
-//   params: {
-//     accountName: cosmosDb.outputs.name
-//     principalId: api.outputs.identityPrincipalId
-//     // Cosmos DB Data Contributor
-//     roleDefinitionId: dbRoleDefinition.outputs.id
-//   }
-// }
+// ---------------------------------------------------------------------------
+// Outputs
 
 output AZURE_LOCATION string = location
 output AZURE_TENANT_ID string = tenant().tenantId
@@ -364,7 +290,3 @@ output AZURE_OPENAI_CHAT_DEPLOYMENT_NAME string = chatModelName
 output AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT_NAME string = embeddingsModelName
 output AZURE_OPENAI_INSTANCE_NAME string = openAi.outputs.name
 output AZURE_OPENAI_API_VERSION string = openAiApiVersion
-
-// output AZURE_STORAGE_URL string = storageUrl
-// output AZURE_STORAGE_CONTAINER_NAME string = blobContainerName
-// output AZURE_COSMOSDB_NOSQL_ENDPOINT string = cosmosDb.outputs.endpoint
