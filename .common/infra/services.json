@@ -1,0 +1,9 @@
+{
+  "useOpenAi": false,
+  "useVnet": false,
+  "useBlobStorage": false,
+  "useStaticWebApp": false,
+  "useCosmosDb": false,
+  "useContainerAppsFunctions": false,
+  "useContainerAppsDynamicSesssions": false
+}
