@@ -10,5 +10,5 @@ POST {{api_host}}/api/hello
 Content-Type: application/json
 
 {
-  "name": "John Doe",
+  "name": "John Doe"
 }
