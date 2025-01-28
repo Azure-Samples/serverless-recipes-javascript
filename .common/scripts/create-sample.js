@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /*
  * Creates a new sample from the template.
- * Usage: create-sample.js <sample-name>
+ * Usage: create-sample.js <sample-name> [--template <template-name>]
  */
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -10,21 +10,49 @@ import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const templatesDir = join(__dirname, '..', 'templates');
+
+function listTemplates() {
+  const availableTemplates = readdirSync(templatesDir, { withFileTypes: true })
+    .filter(entry => entry.isDirectory())
+    .map(entry => entry.name);
+
+  console.error('Available templates:');
+  availableTemplates.forEach(template => console.error(`- ${template}`));
+}
 
 if (process.argv.length < 3) {
-  console.error('Usage: node create-sample.js <name>');
+  console.error('Usage: node create-sample.js <name> [--template <template-name>]');
+  listTemplates();
   process.exit(1);
 }
 
-const sampleName = process.argv[2];
-const templateDir = join(__dirname, '..', 'templates/functions');
-const destinationDir = join(__dirname, '..', '..', 'samples', sampleName);
+const args = process.argv.slice(2);
+let templateName = 'functions';
+let sampleName;
+
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--template' || args[i] === '-t') {
+    templateName = args[i + 1] || templateName;
+    i++;
+  } else {
+    sampleName = args[i];
+  }
+}
+
+const templateDir = join(templatesDir, templateName);
+if (!existsSync(templateDir)) {
+  console.error(`Template "${templateName}" does not exist.`);
+  listTemplates();
+  process.exit(1);
+}
 
 if (/\s/.test(sampleName) || /[A-Z]/.test(sampleName)) {
   console.error('Sample name must be in dash-case (e.g. my-sample)');
   process.exit(1);
 }
 
+const destinationDir = join(__dirname, '..', '..', 'samples', sampleName);
 if (!existsSync(destinationDir)) {
   mkdirSync(destinationDir, { recursive: true });
 }
