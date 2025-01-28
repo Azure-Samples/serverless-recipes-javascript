@@ -27,6 +27,7 @@
         "ms-azuretools.vscode-bicep",
         "esbenp.prettier-vscode",
         "humao.rest-client",
+				"hediet.vscode-drawio",
       ]
     }
   },
