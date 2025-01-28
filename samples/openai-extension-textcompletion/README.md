@@ -13,7 +13,7 @@ products:
   - ai-services
 urlFragment: openai-extension-textcompletion-javascript
 name: Azure Functions OpenAI extension - text completion
-description: This sample demonstrates how to build use Azure OpenAI text completions with Azure Functions the Azure OpenAI extension.
+description: This sample demonstrates how to use Azure OpenAI text completions with Azure Functions the Azure OpenAI extension.
 ---
 -->
 
