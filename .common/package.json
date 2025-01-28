@@ -3,7 +3,19 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "create-sample": "node scripts/create-sample.js",
-    "update-sample": "node scripts/update-sample.js"
+    "create:sample": "node scripts/create-sample.js",
+    "update:sample": "node scripts/update-sample.js",
+    "update:readme": "node scripts/update-readme.js"
+  },
+  "dependencies": {
+    "@azure/functions": "^4",
+    "dotenv": "^16",
+    "openai": "^4"
+  },
+  "devDependencies": {
+    "azure-functions-core-tools": "^4",
+    "@types/node": "^20",
+    "typescript": "^5",
+    "rimraf": "^5"
   }
 }
