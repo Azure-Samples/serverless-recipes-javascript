@@ -13,7 +13,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const samplesDir = path.join(__dirname, '..', '..', 'samples');
-const mainReadmePath = path.join(__dirname, '..', '..', README.md);
+const mainReadmePath = path.join(__dirname, '..', '..', 'README.md');
 const tablePlaceholderStart = '<!-- #begin-samples -->';
 const tablePlaceholderEnd = '<!-- #end-samples -->';
 
@@ -23,6 +23,7 @@ function getSampleInfo(sampleDir) {
 
   const readmeContent = fs.readFileSync(readmePath, 'utf-8');
   const nameMatch = readmeContent.match(/#\s+(.+)/);
+  const descriptionMatch = readmeContent.match(/description:\s+(.+)/);
   const deploymentMatch = readmeContent.match(/Time%20to%20deploy-([^-]+)-teal/);
   const videoMatch = readmeContent.match(/\[📺\s+YouTube\]\((.+)\)/);
   const blogMatch = readmeContent.match(/\[📚\s+Azure Blog\]\((.+)\)/);
@@ -35,16 +36,17 @@ function getSampleInfo(sampleDir) {
 
   return {
     name: nameMatch ? nameMatch[1] : 'Unknown',
+    description: descriptionMatch ? descriptionMatch[1] : '-',
     deployment: deploymentMatch ? deploymentMatch[1] : 'N/A',
-    video: videoMatch ? `[📺](${videoMatch[1]})` : 'N/A',
-    blog: blogMatch ? `[📚](${blogMatch[1]})` : 'N/A',
+    video: videoMatch ? `[📺](${videoMatch[1]})` : '-',
+    blog: blogMatch ? `[📚](${blogMatch[1]})` : '-',
   };
 }
 
 function generateTable(samples) {
-  const header = '| Sample | Deployment Time | Video | Blog |\n|:--- | --- | --- | --- |\n';
+  const header = '| Icon | Sample | Description | Deployment Time | Video | Blog |\n| --- |:--- |:--- | --- | --- | --- |\n';
   const rows = samples.map(sample => 
-    `| [${sample.name}](./samples/${sample.dir}) | ${sample.deployment} | ${sample.video} | ${sample.blog} |`
+    `| <img src="./samples/${sample.dir}/docs/images/icon.png" width="32px"/> | [${sample.name}](./samples/${sample.dir}) | ${sample.description} | ${sample.deployment} | ${sample.video} | ${sample.blog} |`
   ).join('\n');
   return header + rows;
 }
