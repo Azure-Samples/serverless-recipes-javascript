@@ -44,9 +44,9 @@ function getSampleInfo(sampleDir) {
 }
 
 function generateTable(samples) {
-  const header = '| Icon | Sample | Description | Deployment Time | Video | Blog |\n| --- |:--- |:--- | --- | --- | --- |\n';
+  const header = '| | Sample | Deployment Time | Video | Blog |\n| --- |:--- | --- | --- | --- |\n';
   const rows = samples.map(sample => 
-    `| <img src="./samples/${sample.dir}/docs/images/icon.png" width="32px"/> | [${sample.name}](./samples/${sample.dir}) | ${sample.description} | ${sample.deployment} | ${sample.video} | ${sample.blog} |`
+    `| <img src="./samples/${sample.dir}/docs/images/icon.png" width="32px"/> | [${sample.name}](./samples/${sample.dir}) | ${sample.deployment} | ${sample.video} | ${sample.blog} |`
   ).join('\n');
   return header + rows;
 }

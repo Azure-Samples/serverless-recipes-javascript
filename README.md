@@ -107,10 +107,10 @@ You can check the `README.md` file in each sample directory for more specific in
 
 <!-- #begin-samples -->
 
-| Icon | Sample | Description | Deployment Time | Video | Blog |
-| --- |:--- |:--- | --- | --- | --- |
-| <img src="./samples/openai-extension-embeddings/docs/images/icon.png" width="32px"/> | [Azure Functions OpenAI extension - text embeddings](./samples/openai-extension-embeddings) | This sample demonstrates how to use Azure OpenAI text embeddings with Azure Functions the Azure OpenAI extension. | 5min | [📺](TODO) | [📚](TODO) |
-| <img src="./samples/openai-extension-textcompletion/docs/images/icon.png" width="32px"/> | [Azure Functions OpenAI extension - text completion](./samples/openai-extension-textcompletion) | This sample demonstrates how to use Azure OpenAI text completions with Azure Functions the Azure OpenAI extension. | 5min | [📺](TODO) | [📚](TODO) |
+| | Sample | Deployment Time | Video | Blog |
+| --- |:--- | --- | --- | --- |
+| <img src="./samples/openai-extension-embeddings/docs/images/icon.png" width="32px"/> | [Azure Functions OpenAI extension - text embeddings](./samples/openai-extension-embeddings) | 5min | [📺](TODO) | [📚](TODO) |
+| <img src="./samples/openai-extension-textcompletion/docs/images/icon.png" width="32px"/> | [Azure Functions OpenAI extension - text completion](./samples/openai-extension-textcompletion) | 5min | [📺](TODO) | [📚](TODO) |
 
 <!-- #end-samples -->
 
