@@ -18,15 +18,14 @@
   "license": "MIT",
   "template": "functions",
   "dependencies": {
-    "@azure/functions": "^4",
-    "dotenv": "^16.4.7",
-    "openai": "^4.78.1"
+    "@azure/functions": "^4"
   },
   "devDependencies": {
     "@types/node": "^20",
     "azure-functions-core-tools": "^4",
     "azurite": "^3",
     "concurrently": "^9",
+    "dotenv": "^16",
     "rimraf": "^6",
     "typescript": "^5"
   }
