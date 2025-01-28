@@ -35,12 +35,12 @@ description: TODO
 
 </div>
 
+## Overview
+
 TODO: This sample demonstrates how to... with [Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-overview?pivots=programming-language-javascript).
 
 - [📺 YouTube](TODO) - This sample explained in video
 - [📚 Azure Blog](TODO) - Related blog post
-
-## Overview
 
 ![Application architecture](./docs/images/architecture.drawio.png)
 

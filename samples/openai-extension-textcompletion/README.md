@@ -35,12 +35,12 @@ description: This sample demonstrates how to use Azure OpenAI text completions w
 
 </div>
 
+## Overview
+
 This sample demonstrates how to use Azure OpenAI text completions with [Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-overview?pivots=programming-language-javascript) the [Azure OpenAI extension](https://learn.microsoft.com/azure/azure-functions/functions-bindings-openai?tabs=isolated-process&pivots=programming-language-typescript).
 
 - [📺 YouTube](TODO) - This sample explained in video
 - [📚 Azure Blog](TODO) - Related blog post
-
-## Overview
 
 ![Application architecture](./docs/images/architecture.drawio.png)
 
