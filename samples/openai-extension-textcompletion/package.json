@@ -2,7 +2,7 @@
   "name": "openai-extension-textcompletion",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/src/functions/*.js",
+  "main": "./dist/src/functions/**/*.js",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
