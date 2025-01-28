@@ -1,0 +1,14 @@
+##################################################################
+# VS Code with REST Client extension is needed to use this file.
+# Download at: https://aka.ms/vscode/rest-client
+##################################################################
+
+@api_host = http://localhost:7071
+
+### Send a POST request to the API
+POST {{api_host}}/api/hello
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+}

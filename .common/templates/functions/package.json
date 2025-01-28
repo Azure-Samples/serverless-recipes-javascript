@@ -1,0 +1,26 @@
+{
+  "name": "__SAMPLE_NAME__",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/src/functions/*.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf dist",
+    "prestart": "npm run clean && npm run build",
+    "start": "func start"
+  },
+  "author": "Microsoft",
+  "license": "MIT",
+  "dependencies": {
+    "@azure/functions": "^4",
+    "dotenv": "^16",
+    "openai": "^4"
+  },
+  "devDependencies": {
+    "azure-functions-core-tools": "^4",
+    "@types/node": "^20",
+    "typescript": "^5",
+    "rimraf": "^5"
+  }
+}
