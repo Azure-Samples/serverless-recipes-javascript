@@ -1,0 +1,30 @@
+##################################################################
+# VS Code with REST Client extension is needed to use this file.
+# Download at: https://aka.ms/vscode/rest-client
+##################################################################
+
+@api_host = http://localhost:7071
+
+### Generate an embedding from a text
+POST {{api_host}}/api/embeddings/text
+Content-Type: application/json
+
+{
+  "text": "Hello, world!"
+}
+
+### Generate an embedding from a file path
+POST {{api_host}}/api/embeddings/file
+Content-Type: application/json
+
+{
+  "filePath": "../../LICENSE"
+}
+
+### Generate an embedding from a URL
+POST {{api_host}}/api/embeddings/url
+Content-Type: application/json
+
+{
+  "url": "https://raw.githubusercontent.com/Azure-Samples/serverless-recipes-javascript/main/README.md"
+}

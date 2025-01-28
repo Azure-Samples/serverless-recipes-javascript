@@ -1,0 +1,32 @@
+{
+  "name": "openai-extension-embeddings",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/src/functions/**/*.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf dist",
+    "prestart": "npm run clean",
+    "start:storage": "azurite --silent --location ./.azurite --debug ./.azurite/debug.log",
+    "start:host": "func start",
+    "start": "concurrently npm:start:* npm:watch --raw --kill-others",
+    "update:local-settings": "node ./scripts/update-local-settings.mjs",
+    "postinstall": "npm run update:local-settings"
+  },
+  "author": "Microsoft",
+  "license": "MIT",
+  "template": "functions",
+  "dependencies": {
+    "@azure/functions": "^4"
+  },
+  "devDependencies": {
+    "azure-functions-core-tools": "^4",
+    "azurite": "^3",
+    "concurrently": "^9",
+    "@types/node": "^20",
+    "dotenv": "^16",
+    "typescript": "^5",
+    "rimraf": "^5"
+  }
+}
