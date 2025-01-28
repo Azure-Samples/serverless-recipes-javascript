@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const templatesDir = join(__dirname, '..', 'templates');
+const infraDir = join(__dirname, '..', 'infra');
 
 function listTemplates() {
   const availableTemplates = readdirSync(templatesDir, { withFileTypes: true })
@@ -21,43 +22,11 @@ function listTemplates() {
   availableTemplates.forEach(template => console.error(`- ${template}`));
 }
 
-if (process.argv.length < 3) {
-  console.error('Usage: node create-sample.js <name> [--template <template-name>]');
-  listTemplates();
-  process.exit(1);
-}
-
-const args = process.argv.slice(2);
-let templateName = 'functions';
-let sampleName;
-
-for (let i = 0; i < args.length; i++) {
-  if (args[i] === '--template' || args[i] === '-t') {
-    templateName = args[i + 1] || templateName;
-    i++;
-  } else {
-    sampleName = args[i];
-  }
-}
-
-const templateDir = join(templatesDir, templateName);
-if (!existsSync(templateDir)) {
-  console.error(`Template "${templateName}" does not exist.`);
-  listTemplates();
-  process.exit(1);
-}
-
-if (/\s/.test(sampleName) || /[A-Z]/.test(sampleName)) {
-  console.error('Sample name must be in dash-case (e.g. my-sample)');
-  process.exit(1);
-}
-
-const destinationDir = join(__dirname, '..', '..', 'samples', sampleName);
-if (!existsSync(destinationDir)) {
-  mkdirSync(destinationDir, { recursive: true });
-}
-
 function copyDirectory(src, dest) {
+  if (!existsSync(dest)) {
+    mkdirSync(dest, { recursive: true });
+  }
+
   const entries = readdirSync(src, { withFileTypes: true });
 
   entries.forEach(entry => {
@@ -76,6 +45,45 @@ function copyDirectory(src, dest) {
   });
 };
 
-copyDirectory(templateDir, destinationDir);
+function main() {
+  if (process.argv.length < 3) {
+    console.error('Usage: node create-sample.js <name> [--template <template-name>]');
+    listTemplates();
+    process.exit(1);
+  }
+  
+  const args = process.argv.slice(2);
+  let templateName = 'functions';
+  let sampleName;
+  
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--template' || args[i] === '-t') {
+      templateName = args[i + 1] || templateName;
+      i++;
+    } else {
+      sampleName = args[i];
+    }
+  }
+  
+  const templateDir = join(templatesDir, templateName);
+  if (!existsSync(templateDir)) {
+    console.error(`Template "${templateName}" does not exist.`);
+    listTemplates();
+    process.exit(1);
+  }
+  
+  if (/\s/.test(sampleName) || /[A-Z]/.test(sampleName)) {
+    console.error('Sample name must be in dash-case (e.g. my-sample)');
+    process.exit(1);
+  }
+  
+  const destinationDir = join(__dirname, '..', '..', 'samples', sampleName);
 
-console.log(`Sample '${sampleName}' created successfully in ${destinationDir}`);
+
+  copyDirectory(templateDir, destinationDir);
+  copyDirectory(infraDir, join(destinationDir, 'infra'));
+
+  console.log(`Sample '${sampleName}' created successfully in ${destinationDir}`);
+}
+
+main();
