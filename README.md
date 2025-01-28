@@ -13,7 +13,7 @@
 
 ⭐ If you like this project, star it on GitHub — it helps a lot!
 
-[Overview](#overview) • [Get started](#getting-started) • [Run the samples](#run-the-ssamples) • [Resources](#resources) • [Troubleshooting](#troubleshooting)
+[Get started](#getting-started) • [Run the samples](#run-the-samples) • [Samples list](#samples-list) • [Resources](#resources) • [Troubleshooting](#troubleshooting)
 
 </div>
 
