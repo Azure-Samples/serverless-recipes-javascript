@@ -1,35 +1,33 @@
-import { app, input, HttpRequest, InvocationContext } from "@azure/functions";
+import { app, input, type HttpRequest, type InvocationContext } from '@azure/functions';
 
-interface EmbeddingsFileHttpRequest {
-  filePath?: string;
-}
+type EmbeddingsFileHttpRequest = {
+  filePath: string;
+};
 
 const embeddingsHttpInput = input.generic({
-  input: "{filePath}",
-  inputType: "FilePath",
-  type: "embeddings",
+  input: '{filePath}',
+  inputType: 'FilePath',
+  type: 'embeddings',
   maxChunkLength: 512,
-  model: "%AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT_NAME%",
+  model: '%AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT_NAME%',
 });
 
-app.http("embeddings-file", {
-  methods: ["POST"],
-  route: "embeddings/file",
-  authLevel: "anonymous",
+app.http('embeddings-file', {
+  methods: ['POST'],
+  route: 'embeddings/file',
+  authLevel: 'anonymous',
   extraInputs: [embeddingsHttpInput],
-  handler: async (request: HttpRequest, context: InvocationContext) => {
-    const { filePath } = await request.json() as EmbeddingsFileHttpRequest;
+  async handler(request: HttpRequest, context: InvocationContext) {
+    const { filePath } = (await request.json()) as EmbeddingsFileHttpRequest;
     const response: any = context.extraInputs.get(embeddingsHttpInput);
 
-    context.log(
-      `Received ${response.count} embedding(s) for input file ${filePath}.`
-    );
+    context.log(`Received ${response.count} embedding(s) for input file ${filePath}.`);
 
     return {
-      jsonBody: response.request.input.map((chunk, index) => ({
+      jsonBody: response.request.input.map((chunk: string, index: number) => ({
         text: chunk,
         embedding: response.response.data[index].embedding,
-      }))
+      })),
     };
   },
 });

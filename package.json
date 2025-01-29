@@ -30,6 +30,8 @@
       "node"
     ],
     "rules": {
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
       "import/no-unassigned-import": "off",
       "unicorn/prevent-abbreviations": [
         "error",
