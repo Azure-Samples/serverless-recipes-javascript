@@ -28,6 +28,15 @@ The following files are automatically overwritten by the maintenance scripts and
 - `scripts/update-local-settings.js`
 - `tsconfig.json`
 
+### GitHub repository logo
+
+Use https://m365.cloud.microsoft/chat Visual Designer agent.
+
+Example prompt, adapt the context to your sample:
+```
+A logo for a software on lightning, extensibility and magic. Simple, vector, soft gradients, bright colors, flat, white background.
+```
+
 ## Maintenance
 
 To simplify this repository's maintenance, we have a few scripts that help us keep everything aligned and up to date.
