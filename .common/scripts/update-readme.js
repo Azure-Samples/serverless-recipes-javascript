@@ -7,7 +7,7 @@
 import process from 'node:process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,12 +21,12 @@ function getSampleInfo(sampleDir) {
   const readmePath = path.join(sampleDir, 'README.md');
   if (!fs.existsSync(readmePath)) return null;
 
-  const readmeContent = fs.readFileSync(readmePath, 'utf-8');
+  const readmeContent = fs.readFileSync(readmePath, 'utf8');
   const nameMatch = readmeContent.match(/#\s+(.+)/);
   const descriptionMatch = readmeContent.match(/description:\s+(.+)/);
   const deploymentMatch = readmeContent.match(/Time%20to%20deploy-([^-]+)-teal/);
-  const videoMatch = readmeContent.match(/\[📺\s+YouTube\]\((.+)\)/);
-  const blogMatch = readmeContent.match(/\[📚\s+Azure Blog\]\((.+)\)/);
+  const videoMatch = readmeContent.match(/\[📺\s+YouTube]\((.+)\)/);
+  const blogMatch = readmeContent.match(/\[📚\s+Azure Blog]\((.+)\)/);
 
   if (!nameMatch) {
     const message = `Name not found in ${readmePath}`;
@@ -45,32 +45,39 @@ function getSampleInfo(sampleDir) {
 
 function generateTable(samples) {
   const header = '| | Sample | Deployment Time | Video | Blog |\n| --- |:--- | --- | --- | --- |\n';
-  const rows = samples.map(sample => 
-    `| <img src="./samples/${sample.dir}/docs/images/icon.png" width="32px"/> | [${sample.name}](./samples/${sample.dir}) | ${sample.deployment} | ${sample.video} | ${sample.blog} |`
-  ).join('\n');
+  const rows = samples
+    .map(
+      (sample) =>
+        `| <img src="./samples/${sample.dir}/docs/images/icon.png" width="32px"/> | [${sample.name}](./samples/${sample.dir}) | ${sample.deployment} | ${sample.video} | ${sample.blog} |`,
+    )
+    .join('\n');
   return header + rows;
 }
 
 function injectTableIntoReadme(table) {
-  const readmeContent = fs.readFileSync(mainReadmePath, 'utf-8');
+  const readmeContent = fs.readFileSync(mainReadmePath, 'utf8');
   const newContent = readmeContent.replace(
     new RegExp(`${tablePlaceholderStart}[\\s\\S]*${tablePlaceholderEnd}`),
-    `${tablePlaceholderStart}\n\n${table}\n\n${tablePlaceholderEnd}`
+    `${tablePlaceholderStart}\n\n${table}\n\n${tablePlaceholderEnd}`,
   );
-  fs.writeFileSync(mainReadmePath, newContent, 'utf-8');
+  fs.writeFileSync(mainReadmePath, newContent, 'utf8');
 }
 
 function main() {
-  const samples = fs.readdirSync(samplesDir).map(dir => {
-    const sampleDir = path.join(samplesDir, dir);
-    if (fs.lstatSync(sampleDir).isDirectory()) {
-      const info = getSampleInfo(sampleDir);
-      if (info) {
-        return { dir, ...info };
+  const samples = fs
+    .readdirSync(samplesDir)
+    .map((directory) => {
+      const sampleDir = path.join(samplesDir, directory);
+      if (fs.lstatSync(sampleDir).isDirectory()) {
+        const info = getSampleInfo(sampleDir);
+        if (info) {
+          return { directory, ...info };
+        }
       }
-    }
-    return null;
-  }).filter(Boolean);
+
+      return null;
+    })
+    .filter(Boolean);
 
   const table = generateTable(samples);
   injectTableIntoReadme(table);

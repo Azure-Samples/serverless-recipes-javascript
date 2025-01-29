@@ -4,36 +4,36 @@
  * Usage: update-sample.js [sample-name]
  */
 
+import path from 'node:path';
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = path.dirname(__filename);
 
-const sampleDir = join(__dirname, '..', '..', 'samples');
-const infraDir = join(__dirname, '..', 'infra');
+const sampleDir = path.join(__dirname, '..', '..', 'samples');
+const infraDir = path.join(__dirname, '..', 'infra');
 
 // Update samples infrastructure
-readdirSync(sampleDir, { withFileTypes: true }).forEach(dirent => {
+for (const dirent of readdirSync(sampleDir, { withFileTypes: true })) {
   if (dirent.isDirectory()) {
-    const samplePath = join(sampleDir, dirent.name);
-    const sampleInfraPath = join(samplePath, 'infra');
+    const samplePath = path.join(sampleDir, dirent.name);
+    const sampleInfraPath = path.join(samplePath, 'infra');
 
     if (!existsSync(sampleInfraPath)) {
       mkdirSync(sampleInfraPath, { recursive: true });
     }
 
-    readdirSync(infraDir).forEach(file => {
-      const srcFile = join(infraDir, file);
-      const destFile = join(sampleInfraPath, file);
+    for (const file of readdirSync(infraDir)) {
+      const sourceFile = path.join(infraDir, file);
+      const destinationFile = path.join(sampleInfraPath, file);
 
       if (file !== 'services.json') {
-        writeFileSync(destFile, readFileSync(srcFile));
+        writeFileSync(destinationFile, readFileSync(sourceFile));
       }
-    });
+    }
   }
-});
+}
 
 // TODO:
 // - copy .editorconfig

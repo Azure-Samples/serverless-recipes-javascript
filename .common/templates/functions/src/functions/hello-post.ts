@@ -1,16 +1,16 @@
-import { app, HttpRequest, InvocationContext } from "@azure/functions";
+import { app, type HttpRequest, type InvocationContext } from '@azure/functions';
 
-interface HelloHttpRequest {
+type HelloHttpRequest = {
   name?: string;
-}
+};
 
-app.http("hello", {
-  methods: ["POST"],
-  authLevel: "anonymous",
-  handler: async (request: HttpRequest, context: InvocationContext) => {
+app.http('hello', {
+  methods: ['POST'],
+  authLevel: 'anonymous',
+  async handler(request: HttpRequest, _context: InvocationContext) {
     const { name } = (await request.json()) as HelloHttpRequest;
     return {
-      jsonBody: `Hello, ${name || "world"}!`,
+      jsonBody: `Hello, ${name ?? 'world'}!`,
     };
   },
 });

@@ -36,6 +36,7 @@
         {
           "allowList": {
             "env": true,
+            "Dir": true,
             "Db": true
           }
         }
