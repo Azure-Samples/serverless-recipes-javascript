@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "create:sample": "node scripts/create-sample.js",
-    "update:sample": "node scripts/update-sample.js",
-    "update:readme": "node scripts/update-readme.js",
+    "create:sample": "node .common/scripts/create-sample.js",
+    "update:sample": "node .common/scripts/update-sample.js",
+    "update:readme": "node .common/scripts/update-readme.js",
     "lint:fix": "xo --fix",
     "lint": "xo"
   },

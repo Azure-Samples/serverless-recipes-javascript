@@ -1,10 +1,9 @@
 # Base templates and tools for all samples
 
 This directory contains the base templates and tools that are used to simplify the creation and maintenance of all samples.
-Before running any of the scripts, make sure to open the `.common` directory and install the dependencies by running the following command:
+Before running any of the scripts, install the dependencies by running the following command:
 
 ```bash
-cd .common
 npm install
 ```
 
@@ -14,12 +13,6 @@ To create a new sample, run the following command:
 
 ```
 npm run create:sample -- <sample-name> [--template <template-name>]
-```
-
-Or if you're on Linux or MacOS:
-
-```
-./scripts/create-sample.js <sample-name> [--template <template-name>]
 ```
 
 If you don't specify a template, the default template `functions` will be used. Run the command without any arguments to see the available templates.
