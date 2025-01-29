@@ -5,17 +5,48 @@
   "scripts": {
     "create:sample": "node scripts/create-sample.js",
     "update:sample": "node scripts/update-sample.js",
-    "update:readme": "node scripts/update-readme.js"
+    "update:readme": "node scripts/update-readme.js",
+    "lint:fix": "xo --fix",
+    "lint": "xo"
   },
   "dependencies": {
     "@azure/functions": "^4",
     "dotenv": "^16",
-    "openai": "^4"
+    "openai": "^4",
+    "@types/node": "^20",
+    "azure-functions-core-tools": "^4",
+    "azurite": "^3",
+    "concurrently": "^9",
+    "rimraf": "^6",
+    "typescript": "^5"
   },
   "devDependencies": {
-    "azure-functions-core-tools": "^4",
-    "@types/node": "^20",
-    "typescript": "^5",
-    "rimraf": "^5"
+    "xo": "^0.60"
+  },
+  "xo": {
+    "space": true,
+    "prettier": true,
+    "envs": [
+      "node"
+    ],
+    "rules": {
+      "import/no-unassigned-import": "off",
+      "unicorn/prevent-abbreviations": [
+        "error",
+        {
+          "allowList": {
+            "env": true,
+            "Db": true
+          }
+        }
+      ]
+    }
+  },
+  "prettier": {
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": true,
+    "printWidth": 120,
+    "bracketSpacing": true
   }
 }
