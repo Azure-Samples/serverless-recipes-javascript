@@ -18,7 +18,9 @@
     "azurite": "^3",
     "concurrently": "^9",
     "rimraf": "^6",
-    "typescript": "^5"
+    "typescript": "^5",
+    "lit": "^3",
+    "vite": "^6"
   },
   "devDependencies": {
     "xo": "^0.60"
