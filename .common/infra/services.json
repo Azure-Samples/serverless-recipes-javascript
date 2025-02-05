@@ -1,6 +1,7 @@
 {
   "useOpenAi": false,
   "useVnet": false,
+  "useWebapp": false,
   "useBlobStorage": false,
   "useStaticWebApp": false,
   "useCosmosDb": false,

@@ -26,6 +26,7 @@ param environmentName string
 param location string
 
 param resourceGroupName string = ''
+param webappName string = 'webapp'
 param apiServiceName string = 'api'
 
 @description('Location for the OpenAI resource group')
@@ -47,7 +48,7 @@ param apiServiceName string = 'api'
     type: 'location'
   }
 })
-param openAiLocation string // Set in main.parameters.json
+param aiServicesLocation string // Set in main.parameters.json
 param openAiApiVersion string // Set in main.parameters.json
 param chatModelName string // Set in main.parameters.json
 param chatModelVersion string // Set in main.parameters.json
@@ -55,6 +56,17 @@ param chatModelCapacity int // Set in main.parameters.json
 param embeddingsModelName string // Set in main.parameters.json
 param embeddingsModelVersion string // Set in main.parameters.json
 param embeddingsModelCapacity int // Set in main.parameters.json
+
+// Location is not relevant here as it's only for the built-in api
+// which is not used here. Static Web App is a global service otherwise
+@description('Location for the Static Web App')
+@allowed(['westus2', 'centralus', 'eastus2', 'westeurope', 'eastasia', 'eastasiastage'])
+@metadata({
+  azd: {
+    type: 'location'
+  }
+})
+param webappLocation string = 'eastus2'
 
 // Id of the user or app to assign application roles
 param principalId string = ''
@@ -73,6 +85,8 @@ var useVnet = services.?useVnet ?? false
 var useOpenAi = services.?useOpenAi ?? false
 // Enable Blob storage for the Azure Functions API
 var useBlobStorage = services.?useBlobStorage ?? false
+// Enable Static Web Apps
+var useWebapp = services.?useWebapp ?? false
 
 // ---------------------------------------------------------------------------
 // Common variables
@@ -108,8 +122,7 @@ module function 'br/public:avm/res/web/site:0.13.0' = {
     appInsightResourceId: monitoring.outputs.applicationInsightsResourceId
     managedIdentities: { systemAssigned: true }
     appSettingsKeyValuePairs: union(
-      {
-      },
+      {},
       useOpenAi
         ? {
             AZURE_OPENAI_ENDPOINT: openAiUrl
@@ -145,6 +158,7 @@ module function 'br/public:avm/res/web/site:0.13.0' = {
     }
     storageAccountResourceId: storage.outputs.resourceId
     storageAccountUseIdentityAuthentication: true
+    virtualNetworkSubnetId: useVnet ? vnet.outputs.subnetResourceIds[0] : null
   }
 }
 
@@ -160,6 +174,21 @@ module appServicePlan 'br/public:avm/res/web/serverfarm:0.4.1' = {
   }
 }
 
+module webapp 'br/public:avm/res/web/static-site:0.7.0' = if (useWebapp) {
+  name: 'webapp'
+  scope: resourceGroup
+  params: {
+    name: webappName
+    location: webappLocation
+    tags: union(tags, { 'azd-service-name': webappName })
+    sku: 'Standard'
+    linkedBackend: {
+      resourceId: function.outputs.resourceId
+      region: location
+    }
+  }
+}
+
 module storage 'br/public:avm/res/storage/storage-account:0.15.0' = {
   name: 'storage'
   scope: resourceGroup
@@ -169,18 +198,43 @@ module storage 'br/public:avm/res/storage/storage-account:0.15.0' = {
     location: location
     skuName: 'Standard_LRS'
     allowSharedKeyAccess: false
-    publicNetworkAccess: 'Enabled'
-    networkAcls: {
-      bypass: 'AzureServices'
-      defaultAction: 'Allow'
-    }
-    blobServices: {
-      containers: [
-        {
-          name: apiResourceName
+    publicNetworkAccess: useVnet ? null : 'Enabled'
+    networkAcls: useVnet
+      ? {
+          defaultAction: 'Deny'
+          bypass: 'AzureServices'
+          virtualNetworkRules: [
+            {
+              id: vnet.outputs.subnetResourceIds[0]
+              action: 'Allow'
+            }
+          ]
         }
-      ]
+      : {
+          bypass: 'AzureServices'
+          defaultAction: 'Allow'
+        }
+    blobServices: {
+      containers: concat(
+        [],
+        useVnet
+          ? [
+              {
+                name: apiResourceName
+              }
+            ]
+          : []
+      )
     }
+    roleAssignments: useBlobStorage
+      ? [
+          {
+            principalId: principalId
+            principalType: principalType
+            roleDefinitionIdOrName: 'Storage Blob Data Contributor'
+          }
+        ]
+      : []
   }
 }
 
@@ -196,13 +250,34 @@ module monitoring 'br/public:avm/ptn/azd/monitoring:0.1.1' = {
   }
 }
 
+module vnet 'br/public:avm/res/network/virtual-network:0.5.2' = if (useVnet) {
+  name: 'vnet'
+  scope: resourceGroup
+  params: {
+    name: '${abbrs.networkVirtualNetworks}${resourceToken}'
+    location: location
+    tags: tags
+    addressPrefixes: ['10.0.0.0/16']
+    subnets: [
+      {
+        name: 'app'
+        addressPrefix: '10.0.1.0/24'
+        delegation: 'Microsoft.App/environments'
+        serviceEndpoints: ['Microsoft.Storage']
+        privateEndpointNetworkPolicies: 'Disabled'
+        privateLinkServiceNetworkPolicies: 'Enabled'
+      }
+    ]
+  }
+}
+
 module openAi 'br/public:avm/res/cognitive-services/account:0.9.1' = if (useOpenAi) {
   name: 'openai'
   scope: resourceGroup
   params: {
     name: '${abbrs.cognitiveServicesAccounts}${resourceToken}'
     tags: tags
-    location: openAiLocation
+    location: aiServicesLocation
     kind: 'OpenAI'
     disableLocalAuth: true
     customSubDomainName: '${abbrs.cognitiveServicesAccounts}${resourceToken}'
@@ -246,7 +321,7 @@ module openAi 'br/public:avm/res/cognitive-services/account:0.9.1' = if (useOpen
 // ---------------------------------------------------------------------------
 // System roles assignation
 
-module openAiRoleApi 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = {
+module openAiRoleApi 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = if (useOpenAi) {
   scope: resourceGroup
   name: 'openai-role-api'
   params: {
@@ -276,9 +351,10 @@ output AZURE_TENANT_ID string = tenant().tenantId
 output AZURE_RESOURCE_GROUP string = resourceGroup.name
 
 output API_URL string = useVnet ? '' : function.outputs.defaultHostname
+output WEBAPP_URL string = useWebapp ? webapp.outputs.defaultHostname : ''
 
 output AZURE_OPENAI_ENDPOINT string = openAiUrl
 output AZURE_OPENAI_CHAT_DEPLOYMENT_NAME string = chatModelName
 output AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT_NAME string = embeddingsModelName
-output AZURE_OPENAI_INSTANCE_NAME string = openAi.outputs.name
+output AZURE_OPENAI_INSTANCE_NAME string = useOpenAi ? openAi.outputs.name : ''
 output AZURE_OPENAI_API_VERSION string = openAiApiVersion
