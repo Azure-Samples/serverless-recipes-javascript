@@ -1,0 +1,17 @@
+# TODO
+- [ ] add function code
+- [ ] update package.json (dependencies)
+- [ ] update `infra/services.json` (you can remove unused services)
+- [ ] update `api.http`
+- [ ] update readme
+  * [ ] front matter
+  * [ ] description + instructions
+  * [ ] cost
+  * [ ] deployment time
+  * [ ] video link
+  * [ ] blog post link
+  * [ ] references
+- [ ] update architecture schema
+- [ ] generate icon
+- [ ] update sample table in README (`npm run update:readme` in the root of the repo)
+- [ ] (if needed) add dependencies/devDependencies to `/.common/package.json` for maintenance scripts
