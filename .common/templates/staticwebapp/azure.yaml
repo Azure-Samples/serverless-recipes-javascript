@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: __SAMPLE_NAME__-javascript
+metadata:
+  template: serverless-recipes-javascript
+
+# TODO: build after provision, update workflow
+
+services:
+  api:
+    project: ./packages/api
+    language: ts
+    host: function
+
+  webapp:
+    project: ./packages/webapp
+    dist: dist
+    language: ts
+    host: staticwebapp
+
+hooks:
+  postprovision:
+    windows:
+      shell: pwsh
+      run: |
+        azd env get-values > .env
+        npm run update:local-settings
+    posix:
+      shell: sh
+      run: |
+        azd env get-values > .env
+        npm run update:local-settings

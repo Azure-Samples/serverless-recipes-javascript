@@ -1,0 +1,30 @@
+{
+  "name": "__SAMPLE_NAME__",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "concurrently \"npm:start:*\" --kill-others",
+    "start:webapp": "npm run dev --workspace=webapp",
+    "start:api": "npm run start --workspace=api",
+    "build": "npm run build --workspaces --if-present",
+    "build:webapp": "npm run build --workspace=webapp",
+    "build:api": "npm run build --workspace=api",
+    "clean": "npm run clean --workspaces --if-present"
+  },
+  "author": "Microsoft",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "template": "webapp",
+  "devDependencies": {
+    "concurrently": "^9",
+    "typescript": "^5",
+    "rimraf": "^5"
+  },
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10"
+  }
+}
