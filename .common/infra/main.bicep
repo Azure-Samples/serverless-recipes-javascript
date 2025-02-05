@@ -233,21 +233,13 @@ module openAi 'br/public:avm/res/cognitive-services/account:0.9.1' = if (useOpen
         }
       }
     ]
-  }
-}
-
-// ---------------------------------------------------------------------------
-// User roles assignation
-
-module openAiRoleUser 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = {
-  scope: resourceGroup
-  name: 'openai-role-user'
-  params: {
-    principalId: principalId
-    roleName: 'Cognitive Services OpenAI User'
-    roleDefinitionId: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
-    principalType: principalType
-    resourceId: openAi.outputs.resourceId
+    roleAssignments: [
+      {
+        principalId: principalId
+        principalType: principalType
+        roleDefinitionIdOrName: 'Cognitive Services OpenAI User'
+      }
+    ]
   }
 }
 
