@@ -1,0 +1,33 @@
+{
+  "name": "mcp-pizza-api",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/src/functions/**/*.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf dist",
+    "prestart": "npm run clean",
+    "start:storage": "azurite --silent --location ./.azurite --debug ./.azurite/debug.log",
+    "start:host": "func start",
+    "start": "concurrently npm:start:* npm:watch --raw --kill-others",
+    "update:local-settings": "node ./scripts/update-local-settings.mjs",
+    "postinstall": "npm run update:local-settings"
+  },
+  "author": "Microsoft",
+  "license": "MIT",
+  "template": "functions",
+  "dependencies": {
+    "@azure/functions": "^4",
+    "dotenv": "^16",
+    "openai": "^4"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "azure-functions-core-tools": "^4",
+    "azurite": "^3",
+    "concurrently": "^9",
+    "typescript": "^5",
+    "rimraf": "^5"
+  }
+}

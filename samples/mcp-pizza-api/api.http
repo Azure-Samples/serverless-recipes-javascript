@@ -1,0 +1,38 @@
+##################################################################
+# VS Code with REST Client extension is needed to use this file.
+# Download at: https://aka.ms/vscode/rest-client
+##################################################################
+
+@api_host = http://localhost:7071
+
+### Get the menu
+GET {{api_host}}/api/menu
+
+### Get all orders
+GET {{api_host}}/api/orders
+
+### Create a new order with pizza and toppings
+POST {{api_host}}/api/orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "menuItemId": "pizza-1",
+      "quantity": 1,
+      "childItems": [
+        {
+          "menuItemId": "topping-1",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "menuItemId": "drink-1",
+      "quantity": 2
+    }
+  ]
+}
+
+### Delete/cancel an order
+DELETE {{api_host}}/api/orders/12345
