@@ -10,17 +10,19 @@
     "lint": "xo"
   },
   "dependencies": {
+    "@azure/core-sse": "^2",
     "@azure/functions": "^4",
-    "dotenv": "^16",
-    "openai": "^4",
     "@types/node": "^20",
     "azure-functions-core-tools": "^4",
     "azurite": "^3",
     "concurrently": "^9",
+    "dotenv": "^16",
+    "lit": "^3",
+    "openai": "^4",
     "rimraf": "^6",
     "typescript": "^5",
-    "lit": "^3",
-    "vite": "^6"
+    "vite": "^6",
+    "zod": "^3"
   },
   "devDependencies": {
     "xo": "^0.60"
