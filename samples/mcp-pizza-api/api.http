@@ -11,6 +11,10 @@ GET {{api_host}}/api/menu
 ### Get all orders
 GET {{api_host}}/api/orders
 
+### Get a single order by ID
+# Replace the ID with an actual order ID from your system
+GET {{api_host}}/api/orders/12345
+
 ### Create a new order with pizza and toppings
 POST {{api_host}}/api/orders
 Content-Type: application/json

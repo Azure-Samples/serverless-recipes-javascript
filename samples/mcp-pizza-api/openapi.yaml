@@ -1,0 +1,266 @@
+openapi: 3.0.3
+info:
+  title: Pizza API
+  description: API for managing pizza orders, menu items, and related operations
+  version: 1.0.0
+servers:
+  - url: http://localhost:7071/api
+    description: Local development server
+paths:
+  /menu:
+    get:
+      summary: Get menu items
+      description: Returns the list of all available menu items including pizzas, toppings, drinks, and sides
+      operationId: getMenu
+      responses:
+        '200':
+          description: List of menu items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MenuItem'
+  /orders:
+    get:
+      summary: Get all orders
+      description: Returns a list of all orders in the system
+      operationId: getOrders
+      responses:
+        '200':
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+    post:
+      summary: Create a new order
+      description: Places a new order with pizza, toppings, drinks, or other menu items
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /orders/{orderId}:
+    parameters:
+      - name: orderId
+        in: path
+        description: ID of the order
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get order by ID
+      description: Retrieves an order by its ID
+      operationId: getOrderById
+      responses:
+        '200':
+          description: Order details found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Cancel an order
+      description: Cancels an order if it has not yet been started (status must be 'pending')
+      operationId: cancelOrder
+      responses:
+        '200':
+          description: Order cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Order cannot be cancelled (not in pending status)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    MenuCategory:
+      type: string
+      enum:
+        - pizza
+        - drink
+        - side
+        - topping
+    MenuItem:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "pizza-1"
+        category:
+          $ref: '#/components/schemas/MenuCategory'
+        name:
+          type: string
+          example: "Margherita Pizza"
+        description:
+          type: string
+          example: "Classic pizza with tomato sauce and mozzarella"
+        price:
+          type: number
+          format: float
+          example: 12.99
+      required:
+        - id
+        - category
+        - name
+        - description
+        - price
+    OrderStatus:
+      type: string
+      enum:
+        - pending
+        - in-preparation
+        - ready
+        - completed
+        - cancelled
+      description: >
+        - pending: Order has been created but not yet started
+        - in-preparation: Order is being prepared
+        - ready: Order is ready for pickup
+        - completed: Order has been picked up
+        - cancelled: Order has been cancelled
+    OrderChildItem:
+      type: object
+      properties:
+        menuItem:
+          $ref: '#/components/schemas/MenuItem'
+        quantity:
+          type: integer
+          minimum: 1
+          example: 1
+      required:
+        - menuItem
+        - quantity
+    OrderItem:
+      type: object
+      properties:
+        menuItem:
+          $ref: '#/components/schemas/MenuItem'
+        quantity:
+          type: integer
+          minimum: 1
+          example: 1
+        childItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderChildItem'
+          description: Child menu items, e.g. toppings for pizzas
+      required:
+        - menuItem
+        - quantity
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "1618057820123"
+        createdAt:
+          type: string
+          format: date-time
+          description: ISO date string of when the order was created
+          example: "2025-04-10T14:30:00Z"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        estimatedCompletionAt:
+          type: string
+          format: date-time
+          description: ISO date string for estimated completion time
+          example: "2025-04-10T15:00:00Z"
+        totalPrice:
+          type: number
+          format: float
+          example: 22.98
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+      required:
+        - id
+        - createdAt
+        - items
+        - estimatedCompletionAt
+        - totalPrice
+        - status
+    CreateOrderRequest:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              menuItemId:
+                type: string
+                example: "pizza-1"
+              quantity:
+                type: integer
+                minimum: 1
+                example: 1
+              childItems:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    menuItemId:
+                      type: string
+                      example: "topping-1"
+                    quantity:
+                      type: integer
+                      minimum: 1
+                      example: 1
+                  required:
+                    - menuItemId
+                    - quantity
+            required:
+              - menuItemId
+              - quantity
+      required:
+        - items
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Order must contain at least one item"
+      required:
+        - error

@@ -50,6 +50,18 @@ This application is made from multiple components:
 
 - TODO ...
 
+### API Endpoints
+
+The Pizza API provides the following endpoints:
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | /api/menu | Returns the list of all available menu items including pizzas, toppings, drinks, and sides |
+| GET | /api/orders | Returns a list of all orders in the system |
+| POST | /api/orders | Places a new order with pizza, toppings, drinks, or other menu items |
+| GET | /api/orders/{orderId} | Retrieves an order by its ID |
+| DELETE | /api/orders/{orderId} | Cancels an order if it has not yet been started (status must be 'pending') |
+
 ## Run the sample
 
 ### Prerequisites
@@ -130,6 +142,7 @@ To clean up all the Azure resources created by this sample:
 The resource group and all the resources will be deleted.
 
 ## Key concepts
+
 
 TODO
 
