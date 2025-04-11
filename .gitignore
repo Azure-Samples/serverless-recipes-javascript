@@ -6,3 +6,5 @@ Thumbs.db
 TODO
 .env*
 _old*
+.genaiscript
+temp/
