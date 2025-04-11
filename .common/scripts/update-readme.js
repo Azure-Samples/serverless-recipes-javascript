@@ -8,6 +8,7 @@ import process from 'node:process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { dir } from 'node:console';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,8 +23,8 @@ function getSampleInfo(sampleDir) {
   if (!fs.existsSync(readmePath)) return null;
 
   const readmeContent = fs.readFileSync(readmePath, 'utf8');
-  const nameMatch = readmeContent.match(/#\s+(.+)/);
-  const descriptionMatch = readmeContent.match(/description:\s+(.+)/);
+  const nameMatch = readmeContent.match(/^name:\s+(.+)/m);
+  const descriptionMatch = readmeContent.match(/^description:\s+(.+)/m);
   const deploymentMatch = readmeContent.match(/Time%20to%20deploy-([^-]+)-teal/);
   const videoMatch = readmeContent.match(/\[📺\s+YouTube]\((.+)\)/);
   const blogMatch = readmeContent.match(/\[📚\s+Azure Blog]\((.+)\)/);
@@ -35,20 +36,21 @@ function getSampleInfo(sampleDir) {
   }
 
   return {
-    name: nameMatch ? nameMatch[1] : 'Unknown',
+    name: nameMatch ? nameMatch[1] : 'TODO',
     description: descriptionMatch ? descriptionMatch[1] : '-',
     deployment: deploymentMatch ? deploymentMatch[1] : 'N/A',
-    video: videoMatch ? `[📺](${videoMatch[1]})` : '-',
-    blog: blogMatch ? `[📚](${blogMatch[1]})` : '-',
+    video: videoMatch && videoMatch[1] !== 'TODO' ? `[📺](${videoMatch[1]})` : '-',
+    blog: blogMatch && blogMatch[1] !== 'TODO' ? `[📚](${blogMatch[1]})` : '-',
   };
 }
 
 function generateTable(samples) {
   const header = '| | Sample | Deployment Time | Video | Blog |\n| --- |:--- | --- | --- | --- |\n';
   const rows = samples
+    .filter((sample) => sample.name && sample.name !== 'TODO')
     .map(
       (sample) =>
-        `| <img src="./samples/${sample.dir}/docs/images/icon.png" width="32px"/> | [${sample.name}](./samples/${sample.dir}) | ${sample.deployment} | ${sample.video} | ${sample.blog} |`,
+        `| <img src="./samples/${sample.directory}/docs/images/icon.png" width="32px"/> | [${sample.name}](./samples/${sample.directory}) | ${sample.deployment} | ${sample.video} | ${sample.blog} |`,
     )
     .join('\n');
   return header + rows;
