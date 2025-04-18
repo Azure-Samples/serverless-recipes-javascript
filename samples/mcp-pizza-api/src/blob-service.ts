@@ -1,7 +1,10 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import { BlobServiceClient, ContainerClient } from '@azure/storage-blob';
 import { DefaultAzureCredential } from '@azure/identity';
-import * as fs from 'fs';
-import * as path from 'path';
+import dotenv from "dotenv";
+
+dotenv.config({ path: path.join(__dirname, "../.env") });
 
 export class BlobService {
   private static instance: BlobService;
@@ -22,7 +25,7 @@ export class BlobService {
     try {
       const storageUrl = process.env.AZURE_STORAGE_URL;
       const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME || 'blobs';
-      
+
       if (!storageUrl) {
         console.warn('Azure Storage URL not found in environment variables. Using local filesystem fallback.');
         this.useLocalFallback = true;
@@ -31,10 +34,10 @@ export class BlobService {
 
       // Use DefaultAzureCredential for managed identity
       const credential = new DefaultAzureCredential();
-      
+
       this.blobServiceClient = new BlobServiceClient(storageUrl, credential);
       this.containerClient = this.blobServiceClient.getContainerClient(containerName);
-      
+
       // Check if container exists
       const exists = await this.containerClient.exists();
       if (!exists) {
@@ -44,7 +47,7 @@ export class BlobService {
 
       this.isInitialized = true;
       console.log('Successfully connected to Azure Blob Storage');
-      
+
       // Check if images are already uploaded and upload them if needed
       await this.ensureImagesUploaded();
     } catch (error) {
@@ -88,28 +91,28 @@ export class BlobService {
     try {
       // Path to the images directory
       const imagesDir = path.join(process.cwd(), 'data', 'images');
-      
+
       // Get all jpg files in the directory
-      const imageFiles = fs.readdirSync(imagesDir).filter(file => file.endsWith('.jpg'));
-      
+      const imageFiles = (await fs.readdir(imagesDir)).filter(file => file.endsWith('.jpg'));
+
       console.log(`Found ${imageFiles.length} images to upload`);
-      
+
       // Upload each image
       for (const imageFile of imageFiles) {
         const filePath = path.join(imagesDir, imageFile);
-        const fileContent = fs.readFileSync(filePath);
-        
+        const fileContent = await fs.readFile(filePath);
+
         const blockBlobClient = this.containerClient.getBlockBlobClient(imageFile);
-        
+
         await blockBlobClient.upload(fileContent, fileContent.length, {
           blobHTTPHeaders: {
             blobContentType: 'image/jpeg'
           }
         });
-        
+
         console.log(`Uploaded ${imageFile}`);
       }
-      
+
       console.log('All images uploaded successfully');
     } catch (error) {
       console.error('Error uploading images:', error);
@@ -124,18 +127,18 @@ export class BlobService {
   public async getBlob(blobName: string): Promise<Buffer | undefined> {
     // Check if we should use local fallback
     if (this.useLocalFallback) {
-      return this.getLocalFile(blobName);
+      return await this.getLocalFile(blobName);
     }
 
     // Use Azure Blob Storage when available
     if (!this.isInitialized || !this.containerClient) {
-      console.warn('Blob Service not initialized. Falling back to local filesystem.');
-      return this.getLocalFile(blobName);
+      console.warn('Blob Service not initialized');
+      return undefined;
     }
 
     try {
       const blobClient = this.containerClient.getBlobClient(blobName);
-      
+
       // Check if blob exists
       const exists = await blobClient.exists();
       if (!exists) {
@@ -144,7 +147,7 @@ export class BlobService {
       }
 
       const downloadResponse = await blobClient.download();
-      
+
       if (!downloadResponse.readableStreamBody) {
         return undefined;
       }
@@ -153,15 +156,15 @@ export class BlobService {
       return new Promise<Buffer>((resolve, reject) => {
         const chunks: Buffer[] = [];
         const stream = downloadResponse.readableStreamBody!;
-        
+
         stream.on('data', (data) => {
           chunks.push(Buffer.from(data));
         });
-        
+
         stream.on('end', () => {
           resolve(Buffer.concat(chunks));
         });
-        
+
         stream.on('error', reject);
       });
     } catch (error) {
@@ -171,31 +174,42 @@ export class BlobService {
   }
 
   /**
+   * Check if a path exists in the local filesystem
+   * @param path The path to check
+   * @returns True if the path exists, false otherwise
+   */
+  private async pathExists(path: string) {
+    try {
+      await fs.access(path);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
    * Get a file from the local filesystem
    * @param fileName The name of the file to retrieve
    * @returns The file data as a Buffer or undefined if not found
    */
-  private getLocalFile(fileName: string): Promise<Buffer | undefined> {
-    return new Promise((resolve) => {
-      try {
-        const filePath = path.join(process.cwd(), 'data', 'images', fileName);
-        
-        // Check if file exists
-        if (!fs.existsSync(filePath)) {
-          console.warn(`Local file '${fileName}' not found at path: ${filePath}`);
-          resolve(undefined);
-          return;
-        }
-        
-        // Read file
-        const fileContent = fs.readFileSync(filePath);
-        console.log(`Loaded local file: ${fileName}`);
-        resolve(fileContent);
-      } catch (error) {
-        console.error(`Error reading local file '${fileName}':`, error);
-        resolve(undefined);
+  private async getLocalFile(fileName: string): Promise<Buffer | undefined> {
+    try {
+      const filePath = path.join(process.cwd(), 'data', 'images', fileName);
+
+      // Check if file exists
+      if (!(await this.pathExists(filePath))) {
+        console.warn(`Local file '${fileName}' not found at path: ${filePath}`);
+        return undefined;
       }
-    });
+
+      // Read file
+      const fileContent = await fs.readFile(filePath);
+      console.log(`Loaded local file: ${fileName}`);
+      return fileContent;
+    } catch (error) {
+      console.error(`Error reading local file '${fileName}':`, error);
+      return undefined;
+    }
   }
 
   /**
@@ -205,7 +219,7 @@ export class BlobService {
    */
   public getContentType(blobName: string): string {
     const extension = blobName.split('.').pop()?.toLowerCase();
-    
+
     switch (extension) {
       case 'jpg':
       case 'jpeg':

@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { ToppingCategory } from './topping';
 import { Pizza } from './pizza';
 import { Topping } from './topping';
@@ -6,6 +7,9 @@ import { Container, CosmosClient, Database } from '@azure/cosmos';
 import { DefaultAzureCredential } from '@azure/identity';
 import pizzasData from '../data/pizzas.json';
 import toppingsData from '../data/toppings.json';
+import dotenv from "dotenv";
+
+dotenv.config({ path: path.join(__dirname, "../.env") });
 
 // Database service for our pizza API using Azure Cosmos DB
 export class DbService {
@@ -15,7 +19,7 @@ export class DbService {
   private pizzasContainer: Container | undefined = undefined;
   private toppingsContainer: Container | undefined = undefined;
   private ordersContainer: Container | undefined = undefined;
-  
+
   // Fallback to local data if Cosmos DB is not available
   private localPizzas: Pizza[] = [];
   private localToppings: Topping[] = [];
@@ -35,7 +39,7 @@ export class DbService {
   protected async initializeCosmosDb(): Promise<void> {
     try {
       const endpoint = process.env.AZURE_COSMOSDB_NOSQL_ENDPOINT;
-      
+
       if (!endpoint) {
         console.warn('Cosmos DB endpoint not found in environment variables. Using local data.');
         return;
@@ -43,14 +47,14 @@ export class DbService {
 
       // Use DefaultAzureCredential for managed identity
       const credential = new DefaultAzureCredential();
-      
+
       this.client = new CosmosClient({
         endpoint,
         aadCredentials: credential
       });
 
       // Get or create database
-      const databaseId = 'PizzaDb';
+      const databaseId = 'pizzaDB';
       const { database } = await this.client.databases.createIfNotExists({
         id: databaseId
       });
@@ -58,28 +62,28 @@ export class DbService {
 
       // Get or create containers
       const { container: pizzasContainer } = await this.database.containers.createIfNotExists({
-        id: 'Pizzas',
+        id: 'pizzas',
         partitionKey: { paths: ['/id'] }
       });
       this.pizzasContainer = pizzasContainer;
 
       const { container: toppingsContainer } = await this.database.containers.createIfNotExists({
-        id: 'Toppings',
+        id: 'toppings',
         partitionKey: { paths: ['/id'] }
       });
       this.toppingsContainer = toppingsContainer;
 
       const { container: ordersContainer } = await this.database.containers.createIfNotExists({
-        id: 'Orders',
+        id: 'orders',
         partitionKey: { paths: ['/id'] }
       });
       this.ordersContainer = ordersContainer;
 
       this.isCosmosDbInitialized = true;
-      
+
       // Seed initial data if containers are empty
       await this.seedInitialDataIfEmpty();
-      
+
       console.log('Successfully connected to Cosmos DB');
     } catch (error) {
       console.error('Failed to initialize Cosmos DB:', error);
@@ -95,7 +99,7 @@ export class DbService {
       // Check if Pizzas container is empty
       const pizzaIterator = this.pizzasContainer!.items.query('SELECT VALUE COUNT(1) FROM c');
       const pizzaCount = (await pizzaIterator.fetchAll()).resources[0];
-      
+
       if (pizzaCount === 0) {
         console.log('Seeding pizzas data to Cosmos DB...');
         const pizzas = pizzasData as Pizza[];
@@ -107,7 +111,7 @@ export class DbService {
       // Check if Toppings container is empty
       const toppingIterator = this.toppingsContainer!.items.query('SELECT VALUE COUNT(1) FROM c');
       const toppingCount = (await toppingIterator.fetchAll()).resources[0];
-      
+
       if (toppingCount === 0) {
         console.log('Seeding toppings data to Cosmos DB...');
         const toppings = toppingsData as Topping[];
@@ -259,18 +263,18 @@ export class DbService {
       try {
         // First read the order to check its status
         const { resource: existingOrder } = await this.ordersContainer!.item(id, id).read();
-        
+
         if (!existingOrder || existingOrder.status !== OrderStatus.Pending) {
           return undefined;
         }
-        
+
         // Update the order status
         const updatedOrder = { ...existingOrder, status: OrderStatus.Cancelled };
         const { resource } = await this.ordersContainer!.item(id, id).replace(updatedOrder);
         return resource as Order;
       } catch (error) {
         console.error(`Error cancelling order ${id} in Cosmos DB:`, error);
-        
+
         // Fall back to local data
         const orderIndex = this.localOrders.findIndex(order => order.id === id);
         if (orderIndex === -1) {
@@ -308,7 +312,7 @@ export class DbService {
   protected initializeLocalData(): void {
     // Load pizzas
     this.localPizzas = pizzasData as Pizza[];
-    
+
     // Load toppings
     this.localToppings = toppingsData as Topping[];
   }
