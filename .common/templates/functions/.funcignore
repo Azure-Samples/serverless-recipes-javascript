@@ -1,6 +1,7 @@
 .vscode
 .azure/
 .azurite/
+.genaiscript/
 test/
 docs/
 infra/
@@ -17,3 +18,4 @@ tsconfig.json
 azure.yaml
 local.settings.json
 README.md
+TODO
