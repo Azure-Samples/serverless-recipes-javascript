@@ -1,5 +1,5 @@
 {
-  "useOpenAi": true,
+  "useOpenAi": false,
   "useVnet": false,
   "useWebapp": false,
   "useBlobStorage": true,
