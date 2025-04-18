@@ -1,51 +1,41 @@
 import { app, type HttpRequest, type InvocationContext } from '@azure/functions';
 import { DbService } from '../db-service';
 
-// Get all orders endpoint
-app.http('orders-get', {
+app.http('pizzas-get', {
   methods: ['GET'],
   authLevel: 'anonymous',
-  route: 'orders',
+  route: 'pizzas',
   handler: async (_request: HttpRequest, context: InvocationContext) => {
-    context.log('Processing request to get all orders...');
+    context.log('Processing request to get all pizzas...');
 
     const dataService = await DbService.getInstance();
-    const orders = await dataService.getOrders();
+    const pizzas = await dataService.getPizzas();
 
     return {
-      jsonBody: orders,
+      jsonBody: pizzas,
       status: 200
     };
   }
 });
 
-// Get single order by ID endpoint
-app.http('orders-get-by-id', {
+app.http('pizza-get-by-id', {
   methods: ['GET'],
   authLevel: 'anonymous',
-  route: 'orders/{orderId}',
+  route: 'pizzas/{id}',
   handler: async (request: HttpRequest, _context: InvocationContext) => {
-    const orderId = request.params.orderId;
-
-    if (!orderId) {
-      return {
-        jsonBody: { error: 'Order ID is required' },
-        status: 400
-      };
-    }
-
+    const id = request.params.id;
     const dataService = await DbService.getInstance();
-    const order = await dataService.getOrder(orderId);
+    const pizza = await dataService.getPizza(id);
 
-    if (!order) {
+    if (!pizza) {
       return {
-        jsonBody: { error: 'Order not found' },
+        jsonBody: { error: 'Pizza not found' },
         status: 404
       };
     }
 
     return {
-      jsonBody: order,
+      jsonBody: pizza,
       status: 200
     };
   }

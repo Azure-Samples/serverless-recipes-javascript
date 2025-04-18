@@ -56,11 +56,48 @@ The Pizza API provides the following endpoints:
 
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | /api/menu | Returns the list of all available menu items including pizzas, toppings, drinks, and sides |
+| GET | /api/pizzas | Returns a list of all pizzas |
+| GET | /api/pizzas/{id} | Retrieves a specific pizza by its ID |
+| GET | /api/toppings | Returns a list of all toppings (can be filtered by category with ?category=X) |
+| GET | /api/toppings/{id} | Retrieves a specific topping by its ID |
+| GET | /api/toppings/categories | Returns a list of all topping categories |
 | GET | /api/orders | Returns a list of all orders in the system |
-| POST | /api/orders | Places a new order with pizza, toppings, drinks, or other menu items |
+| POST | /api/orders | Places a new order with pizzas (requires userId) |
 | GET | /api/orders/{orderId} | Retrieves an order by its ID |
 | DELETE | /api/orders/{orderId} | Cancels an order if it has not yet been started (status must be 'pending') |
+| GET | /api/images/{filepath} | Retrieves image files (e.g., /api/images/pizzas/pizza-1.jpg) |
+
+You can view the complete API documentation by opening the [Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/microsoft/open-hack-build-25/blob/pizza-api/src/pizza-api/openapi.yaml) or the [OpenAPI YAML file](openapi.yaml).
+
+### MCP tools
+
+The Pizza MCP server provides the following tools, exposing the Pizza API endpoints:
+
+| Tool Name | Description |
+|-----------|-------------|
+| get_pizzas | Get a list of all pizzas in the menu |
+| get_pizza_by_id | Get a specific pizza by its ID |
+| get_toppings | Get a list of all toppings in the menu |
+| get_topping_by_id | Get a specific topping by its ID |
+| get_topping_categories | Get a list of all topping categories |
+| get_orders | Get a list of all orders in the system |
+| get_order_by_id | Get a specific order by its ID |
+| place_order | Place a new order with pizzas (requires userId) |
+| delete_order_by_id | Cancel an order if it has not yet been started (status must be 'pending') |
+| get_image | Retrieve the full URL of an image file |
+
+#### Test with MCP inspector
+
+First, you need to start the Pizza API and Pizza MCP server locally.
+
+1. In a terminal window, start MCP Inspector:
+    ```bash
+    npx -y @modelcontextprotocol/inspector
+    ```
+2. Ctrl+click to load the MCP Inspector web app from the URL displayed by the app (e.g. http://127.0.0.1:6274)
+3. In the MCP Inspector, set the transport type to **SSE** and 
+3. Put `http://localhost:7072/runtime/webhooks/mcp/sse` in the URL field and click on the **Connect** button.
+4. In the **Tools** tab, select **List Tools**. Click on a tool and select **Run Tool**.
 
 ## Run the sample
 
@@ -103,7 +140,7 @@ Open a terminal in the project root and follow these steps to deploy the Azure r
 
 ```bash
 # Open the sample directory
-cd samples/pizza-api
+cd samples/mcp-pizza-api
 
 # Install dependencies
 npm install

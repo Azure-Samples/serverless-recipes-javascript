@@ -2,7 +2,7 @@
   "useOpenAi": true,
   "useVnet": false,
   "useWebapp": false,
-  "useBlobStorage": false,
+  "useBlobStorage": true,
   "useStaticWebApp": false,
   "useCosmosDb": true,
   "useContainerAppsFunctions": false,

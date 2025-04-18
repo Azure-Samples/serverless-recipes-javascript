@@ -1,11 +1,14 @@
 import { app, type HttpRequest, type InvocationContext } from '@azure/functions';
-import { DbService } from '../data/db-service';
+import { DbService } from '../db-service';
 
 app.http('orders-delete', {
   methods: ['DELETE'],
   authLevel: 'anonymous',
   route: 'orders/{id}',
   handler: async (request: HttpRequest, context: InvocationContext) => {
+    context.log('Processing order cancellation request...');
+    context.log('Request params:', request.params);
+
     try {
       const id = request.params?.id;
 
@@ -16,8 +19,8 @@ app.http('orders-delete', {
         };
       }
 
-      const dbService = DbService.getInstance();
-      const cancelledOrder = dbService.cancelOrder(id);
+      const dataService = await DbService.getInstance();
+      const cancelledOrder = await dataService.cancelOrder(id);
 
       if (!cancelledOrder) {
         return {

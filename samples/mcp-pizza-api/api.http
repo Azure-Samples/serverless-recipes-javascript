@@ -5,8 +5,23 @@
 
 @api_host = http://localhost:7071
 
-### Get the menu
-GET {{api_host}}/api/menu
+### Get all pizzas
+GET {{api_host}}/api/pizzas
+
+### Get a single pizza by ID
+GET {{api_host}}/api/pizzas/1
+
+### Get all toppings
+GET {{api_host}}/api/toppings
+
+### Get toppings by category
+GET {{api_host}}/api/toppings?category=cheese
+
+### Get all topping categories
+GET {{api_host}}/api/toppings/categories
+
+### Get a single topping by ID
+GET {{api_host}}/api/toppings/1
 
 ### Get all orders
 GET {{api_host}}/api/orders
@@ -15,28 +30,49 @@ GET {{api_host}}/api/orders
 # Replace the ID with an actual order ID from your system
 GET {{api_host}}/api/orders/12345
 
-### Create a new order with pizza and toppings
+### Create a new order with pizzas
 POST {{api_host}}/api/orders
 Content-Type: application/json
 
 {
+  "userId": "user123",
   "items": [
     {
-      "menuItemId": "pizza-1",
-      "quantity": 1,
-      "childItems": [
-        {
-          "menuItemId": "topping-1",
-          "quantity": 1
-        }
-      ]
+      "pizzaId": "1",
+      "quantity": 1
     },
     {
-      "menuItemId": "drink-1",
+      "pizzaId": "2",
       "quantity": 2
+    }
+  ]
+}
+
+### Create a new order with pizzas and extra toppings
+POST {{api_host}}/api/orders
+Content-Type: application/json
+
+{
+  "userId": "user123",
+  "items": [
+    {
+      "pizzaId": "1",
+      "quantity": 1,
+      "extraToppingIds": ["3", "4"]
+    },
+    {
+      "pizzaId": "2",
+      "quantity": 2,
+      "extraToppingIds": ["5"]
     }
   ]
 }
 
 ### Delete/cancel an order
 DELETE {{api_host}}/api/orders/12345
+
+### Get a pizza image
+GET {{api_host}}/api/images/pizza-pic-1.jpg
+
+### Get a topping image
+GET {{api_host}}/api/images/topping-pic-1.jpg

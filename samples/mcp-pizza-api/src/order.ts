@@ -1,5 +1,3 @@
-import { MenuItem } from './menu-item';
-
 export enum OrderStatus {
   Pending = 'pending',
   InPreparation = 'in-preparation',
@@ -9,18 +7,14 @@ export enum OrderStatus {
 }
 
 export interface OrderItem {
-  menuItem: MenuItem;
+  pizzaId: string;
   quantity: number;
-  childItems?: OrderChildItem[]; // Child menu items, e.g. toppings for pizzas
-}
-
-export interface OrderChildItem {
-  menuItem: MenuItem;
-  quantity: number;
+  extraToppingIds?: string[]; // Optional list of extra topping IDs
 }
 
 export interface Order {
   id: string;
+  userId: string; // Mandatory userId parameter
   createdAt: string; // ISO date string
   items: OrderItem[];
   estimatedCompletionAt: string; // ISO date string for estimated completion time

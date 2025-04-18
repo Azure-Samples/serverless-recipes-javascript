@@ -7,20 +7,6 @@ servers:
   - url: http://localhost:7071/api
     description: Local development server
 paths:
-  /menu:
-    get:
-      summary: Get menu items
-      description: Returns the list of all available menu items including pizzas, toppings, drinks, and sides
-      operationId: getMenu
-      responses:
-        '200':
-          description: List of menu items
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/MenuItem'
   /orders:
     get:
       summary: Get all orders
@@ -112,6 +98,153 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /pizzas:
+    get:
+      summary: Get all pizzas
+      description: Returns a list of all pizzas
+      operationId: getPizzas
+      responses:
+        '200':
+          description: List of pizzas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MenuItem'
+  /pizzas/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: ID of the pizza
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get pizza by ID
+      description: Retrieves a specific pizza by its ID
+      operationId: getPizzaById
+      responses:
+        '200':
+          description: Pizza details found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuItem'
+        '404':
+          description: Pizza not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /toppings:
+    get:
+      summary: Get all toppings
+      description: Returns a list of all toppings
+      operationId: getToppings
+      parameters:
+        - name: category
+          in: query
+          description: Filter toppings by category
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of toppings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MenuItem'
+  /toppings/categories:
+    get:
+      summary: Get all topping categories
+      description: Returns a list of all topping categories
+      operationId: getToppingCategories
+      responses:
+        '200':
+          description: List of topping categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /toppings/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: ID of the topping
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get topping by ID
+      description: Retrieves a specific topping by its ID
+      operationId: getToppingById
+      responses:
+        '200':
+          description: Topping details found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuItem'
+        '404':
+          description: Topping not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /images/{filepath}:
+    parameters:
+      - name: filepath
+        in: path
+        description: Path to the image file in Azure Blob Storage
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get an image
+      description: Retrieves an image from Azure Blob Storage
+      operationId: getImage
+      responses:
+        '200':
+          description: Image found and returned
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/gif:
+              schema:
+                type: string
+                format: binary
+            image/webp:
+              schema:
+                type: string
+                format: binary
+            image/svg+xml:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Invalid request - image path is required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Image not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     MenuCategory:
@@ -159,34 +292,24 @@ components:
         - ready: Order is ready for pickup
         - completed: Order has been picked up
         - cancelled: Order has been cancelled
-    OrderChildItem:
-      type: object
-      properties:
-        menuItem:
-          $ref: '#/components/schemas/MenuItem'
-        quantity:
-          type: integer
-          minimum: 1
-          example: 1
-      required:
-        - menuItem
-        - quantity
     OrderItem:
       type: object
       properties:
-        menuItem:
-          $ref: '#/components/schemas/MenuItem'
+        pizzaId:
+          type: string
+          example: "pizza-1"
         quantity:
           type: integer
           minimum: 1
           example: 1
-        childItems:
+        extraToppingIds:
           type: array
           items:
-            $ref: '#/components/schemas/OrderChildItem'
-          description: Child menu items, e.g. toppings for pizzas
+            type: string
+          description: Optional list of extra topping IDs to add to the pizza
+          example: ["topping-1", "topping-2"]
       required:
-        - menuItem
+        - pizzaId
         - quantity
     Order:
       type: object
@@ -194,6 +317,9 @@ components:
         id:
           type: string
           example: "1618057820123"
+        userId:
+          type: string
+          example: "user123"
         createdAt:
           type: string
           format: date-time
@@ -216,6 +342,7 @@ components:
           $ref: '#/components/schemas/OrderStatus'
       required:
         - id
+        - userId
         - createdAt
         - items
         - estimatedCompletionAt
@@ -224,37 +351,32 @@ components:
     CreateOrderRequest:
       type: object
       properties:
+        userId:
+          type: string
+          example: "user123"
         items:
           type: array
           items:
             type: object
             properties:
-              menuItemId:
+              pizzaId:
                 type: string
                 example: "pizza-1"
               quantity:
                 type: integer
                 minimum: 1
                 example: 1
-              childItems:
+              extraToppingIds:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    menuItemId:
-                      type: string
-                      example: "topping-1"
-                    quantity:
-                      type: integer
-                      minimum: 1
-                      example: 1
-                  required:
-                    - menuItemId
-                    - quantity
+                  type: string
+                description: Optional list of extra topping IDs to add to the pizza
+                example: ["topping-1", "topping-2"]
             required:
-              - menuItemId
+              - pizzaId
               - quantity
       required:
+        - userId
         - items
     ErrorResponse:
       type: object

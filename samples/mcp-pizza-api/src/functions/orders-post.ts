@@ -1,16 +1,13 @@
 import { app, type HttpRequest, type InvocationContext } from '@azure/functions';
-import { DbService } from '../data/db-service';
-import { OrderStatus, type OrderItem, type OrderChildItem } from '../data/order';
-import { MenuCategory } from '../data/menu-item';
+import { DbService } from '../db-service';
+import { OrderStatus, type OrderItem } from '../order';
 
 interface CreateOrderRequest {
+  userId: string;
   items: {
-    menuItemId: string;
+    pizzaId: string;
     quantity: number;
-    childItems?: {
-      menuItemId: string;
-      quantity: number;
-    }[];
+    extraToppingIds?: string[];
   }[];
 }
 
@@ -19,14 +16,25 @@ app.http('orders-post', {
   authLevel: 'anonymous',
   route: 'orders',
   handler: async (request: HttpRequest, context: InvocationContext) => {
+    context.log('Processing order creation request...');
+    
     try {
-      const dbService = DbService.getInstance();
+      const dataService = await DbService.getInstance();
       const requestBody = await request.json() as CreateOrderRequest;
+      context.log('Request body:', requestBody);
+
+      // Validate userId is provided
+      if (!requestBody.userId) {
+        return {
+          status: 400,
+          jsonBody: { error: 'userId is required' }
+        };
+      }
 
       if (!requestBody.items || !Array.isArray(requestBody.items) || requestBody.items.length === 0) {
         return {
           status: 400,
-          jsonBody: { error: 'Order must contain at least one item' }
+          jsonBody: { error: 'Order must contain at least one pizza' }
         };
       }
 
@@ -35,66 +43,36 @@ app.http('orders-post', {
       let totalPrice = 0;
 
       for (const item of requestBody.items) {
-        const menuItem = dbService.getMenuItem(item.menuItemId);
-        if (!menuItem) {
+        const pizza = await dataService.getPizza(item.pizzaId);
+        if (!pizza) {
           return {
             status: 400,
-            jsonBody: { error: `Menu item with ID ${item.menuItemId} not found` }
+            jsonBody: { error: `Pizza with ID ${item.pizzaId} not found` }
           };
         }
 
-        let itemPrice = menuItem.price * item.quantity;
-        const childItems: OrderChildItem[] = [];
-
-        // Process child items (toppings)
-        if (item.childItems && item.childItems.length > 0) {
-          // Only pizza items can have toppings as child items
-          if (menuItem.category !== MenuCategory.Pizza) {
-            return {
-              status: 400,
-              jsonBody: {
-                error: `Child items (toppings) can only be added to pizza items. Item ${menuItem.name} is not a pizza.`
-              }
-            };
-          }
-
-          for (const childItem of item.childItems) {
-            const childMenuItem = dbService.getMenuItem(childItem.menuItemId);
-
-            if (!childMenuItem) {
+        // Validate and calculate price for extra toppings
+        let extraToppingsPrice = 0;
+        if (item.extraToppingIds && item.extraToppingIds.length > 0) {
+          for (const toppingId of item.extraToppingIds) {
+            const topping = await dataService.getTopping(toppingId);
+            if (!topping) {
               return {
                 status: 400,
-                jsonBody: { error: `Child menu item with ID ${childItem.menuItemId} not found` }
+                jsonBody: { error: `Topping with ID ${toppingId} not found` }
               };
             }
-
-            // Validate that the child item is a topping
-            if (childMenuItem.category !== MenuCategory.Topping) {
-              return {
-                status: 400,
-                jsonBody: {
-                  error: `Child item ${childMenuItem.name} must be a topping, not ${childMenuItem.category}`
-                }
-              };
-            }
-
-            // Add child item price to the total price
-            const childItemPrice = childMenuItem.price * childItem.quantity;
-            itemPrice += childItemPrice * item.quantity;
-
-            // Add to child items list
-            childItems.push({
-              menuItem: childMenuItem,
-              quantity: childItem.quantity
-            });
+            extraToppingsPrice += topping.price;
           }
         }
 
+        const itemPrice = (pizza.price + extraToppingsPrice) * item.quantity;
         totalPrice += itemPrice;
+        
         orderItems.push({
-          menuItem,
+          pizzaId: item.pizzaId,
           quantity: item.quantity,
-          childItems: childItems.length > 0 ? childItems : undefined
+          extraToppingIds: item.extraToppingIds
         });
       }
 
@@ -103,7 +81,8 @@ app.http('orders-post', {
       const estimatedCompletionAt = new Date(now.getTime() + 30 * 60000); // 30 minutes in milliseconds
 
       // Create the order
-      const order = dbService.createOrder({
+      const order = await dataService.createOrder({
+        userId: requestBody.userId,
         createdAt: now.toISOString(),
         items: orderItems,
         estimatedCompletionAt: estimatedCompletionAt.toISOString(),

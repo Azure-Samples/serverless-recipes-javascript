@@ -11,7 +11,10 @@
   },
   "dependencies": {
     "@azure/core-sse": "^2",
+    "@azure/cosmos": "^4",
     "@azure/functions": "^4",
+    "@azure/identity": "^4",
+    "@azure/storage-blob": "^12",
     "@types/node": "^20",
     "azure-functions-core-tools": "^4",
     "azurite": "^3",
