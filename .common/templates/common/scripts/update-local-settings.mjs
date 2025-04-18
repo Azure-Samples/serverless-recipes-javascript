@@ -37,6 +37,23 @@ if (services.useOpenAi) {
   };
 }
 
+if (services.useBlobStorage) {
+  console.log('Setting Blob Storage service values...');
+  settings = {
+    ...settings,
+    AZURE_STORAGE_URL: process.env.AZURE_STORAGE_URL,
+    AZURE_STORAGE_CONTAINER_NAME: process.env.AZURE_STORAGE_CONTAINER_NAME,
+  };
+}
+
+if (services.useCosmosDb) {
+  console.log('Setting Cosmos DB service values...');
+  settings = {
+    ...settings,
+    AZURE_COSMOSDB_NOSQL_ENDPOINT: process.env.AZURE_COSMOSDB_NOSQL_ENDPOINT,
+  };
+}
+
 writeFileSync(
   settingsFilePath,
   JSON.stringify(
