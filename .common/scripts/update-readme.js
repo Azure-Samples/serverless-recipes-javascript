@@ -38,8 +38,8 @@ function getSampleInfo(sampleDir) {
     name: nameMatch ? nameMatch[1] : 'Unknown',
     description: descriptionMatch ? descriptionMatch[1] : '-',
     deployment: deploymentMatch ? deploymentMatch[1] : 'N/A',
-    video: videoMatch ? `[📺](${videoMatch[1]})` : '-',
-    blog: blogMatch ? `[📚](${blogMatch[1]})` : '-',
+    video: videoMatch && videoMatch[1] !== 'TODO'  ? `[📺](${videoMatch[1]})` : '-',
+    blog: blogMatch && blogMatch[1] !== 'TODO' ? `[📚](${blogMatch[1]})` : '-',
   };
 }
 
@@ -48,7 +48,7 @@ function generateTable(samples) {
   const rows = samples
     .map(
       (sample) =>
-        `| <img src="./samples/${sample.dir}/docs/images/icon.png" width="32px"/> | [${sample.name}](./samples/${sample.dir}) | ${sample.deployment} | ${sample.video} | ${sample.blog} |`,
+        `| <img src="./samples/${sample.directory}/docs/images/icon.png" width="32px"/> | [${sample.name}](./samples/${sample.directory}) | ${sample.deployment} | ${sample.video} | ${sample.blog} |`,
     )
     .join('\n');
   return header + rows;
