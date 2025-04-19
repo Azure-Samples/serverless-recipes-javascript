@@ -9,9 +9,11 @@ languages:
   - bicep
 products:
   - azure
+  - azure-openai
+  - ai-services
 urlFragment: mcp-pizza-api-javascript
-name: Azure Functions Pizza API & MCP server
-description: Demonstrates how to create a MCP (Model Context Protocol) tool server using Azure Functions, exposing a pizza ordering API as tools.
+name: TODO
+description: TODO
 ---
 -->
 
@@ -22,7 +24,7 @@ description: Demonstrates how to create a MCP (Model Context Protocol) tool serv
 
 <img src="./docs/images/icon.png" alt="" align="center" height="64" />
 
-# Azure Functions Pizza API & MCP server
+# Azure Functions Pizza API
 
 [![Open project in GitHub Codespaces](https://img.shields.io/badge/Codespaces-Open-blue?style=flat-square&logo=github)](https://codespaces.new/Azure-Samples/serverless-recipes-javascript?hide_repo_select=true&ref=main&quickstart=true)
 ![Node version](https://img.shields.io/badge/Node.js->=20-3c873a?style=flat-square)
@@ -35,19 +37,18 @@ description: Demonstrates how to create a MCP (Model Context Protocol) tool serv
 
 ## Overview
 
-This sample demonstrates how to build a feature-rich pizza ordering API using [Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-overview?pivots=programming-language-javascript), with Model Context Protocol (MCP) tool integration.
+TODO: This sample demonstrates how to... with [Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-overview?pivots=programming-language-javascript).
 
-<!-- - [📺 YouTube](TODO) - This sample explained in video
-- [📚 Azure Blog](TODO) - Related blog post -->
+- [📺 YouTube](TODO) - This sample explained in video
+- [📚 Azure Blog](TODO) - Related blog post
 
 ![Application architecture](./docs/images/architecture.drawio.png)
 
-This application is composed of several components:
+This application is made from multiple components:
 
-- A serverless API implemented in [Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-overview?pivots=programming-language-javascript), written in TypeScript.
-- A local in-memory data layer for pizza menus, toppings, and orders, used during development.
-- An [MCP](https://mcp.microsoft.com/) server exposing pizza business logic and API endpoints as tools.
-- OpenAPI documentation for easy exploration of the REST endpoints.
+- A serverless API built with [Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-overview?pivots=programming-language-javascript).
+
+- TODO ...
 
 ### API Endpoints
 
@@ -152,35 +153,21 @@ azd up
 You will be prompted to select a base location for the resources. If you're unsure of which location to choose, select `eastus2`.
 The deployment process will take a few minutes.
 
-### Test the application locally
+### Test the application
 
-You can use the following command to run the application locally:
+Once the resources are deployed, you can run the following command to run the application locally:
 
 ```bash
 npm start
 ```
 
-This command will start the Azure Functions application locally. The pizza API will be available at `http://localhost:7071/api/`.
-You can now test the application by running:
+TODO: This command will start the Azure Functions application locally. You can test the application by...
 
 ```bash
-curl http://localhost:7071/api/pizzas
+curl -X POST http://localhost:7071/api/hello
 ```
 
-Try other endpoints, such as posting a new order or listing toppings.
-
-Alternatively, you can also open the file `api.http` in VS Code and click on **Send Request** to try the endpoints.
-
-#### Using Swagger/OpenAPI
-
-You can open the [Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/microsoft/serverless-recipes-js/blob/samples/mcp-pizza-api/openapi.yaml) and test the endpoints interactively.
-
-#### Using the MCP Inspector
-
-Once the application is running, you can test the MCP tools using the MCP Inspector. The Function app is exposing the MCP server over SSE (Server-Sent Events) at the following URL: `http://localhost:7071/runtime/webhooks/mcp/sse`.
-
-
-- Follow the "Test with MCP inspector" steps above to run tool-based interactions over SSE.
+Alternatively, you can also open the file `api.http` and click on **Send Request** to test the endpoints.
 
 ### Clean up
 
@@ -193,11 +180,8 @@ The resource group and all the resources will be deleted.
 
 ## Key concepts
 
-- **Azure Functions**: Serverless APIs with HTTP triggers for REST endpoints.
-- **TypeScript and Node.js**: Type-safe application and API logic.
-- **Model Context Protocol (MCP)**: Expose backend operations as tools that can be orchestrated by AI or other agents.
-- **OpenAPI/Swagger**: For API discoverability and client generation.
-- **Local Data Storage**: This sample uses in-memory data for pizzas, toppings, and orders; in production, swap to durable storage.
+
+TODO
 
 ## Troubleshooting
 
@@ -207,8 +191,4 @@ If you have any issue when running or deploying this sample, please check the [t
 
 Here are some resources to learn more about the technologies used in this sample:
 
-- [Azure Functions documentation](https://learn.microsoft.com/azure/azure-functions/)
-- https://github.com/Azure-Samples/remote-mcp-functions-typescript
-- [Model Context Protocol](https://github.com/microsoft/mcp)
-- [Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/)
 - TODO ...
