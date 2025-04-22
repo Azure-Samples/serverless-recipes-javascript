@@ -20,6 +20,7 @@
     "azurite": "^3",
     "concurrently": "^9",
     "dotenv": "^16",
+    "genaiscript": "^1",
     "lit": "^3",
     "openai": "^4",
     "rimraf": "^6",
