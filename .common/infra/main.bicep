@@ -211,7 +211,7 @@ module webapp 'br/public:avm/res/web/static-site:0.9.0' = if (useWebapp) {
     sku: 'Standard'
     linkedBackend: {
       resourceId: function.outputs.resourceId
-      region: location
+      location: location
     }
   }
 }
